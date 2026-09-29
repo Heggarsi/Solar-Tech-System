@@ -1,0 +1,6 @@
+{
+  "name": "Solar Tech Systems",
+  "description": "Renewable solar energy solutions, commercial rooftops, 33 kV transmission lines, and substation USS commissioning across Karnataka.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
