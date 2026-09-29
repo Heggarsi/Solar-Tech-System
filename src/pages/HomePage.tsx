@@ -1,10 +1,30 @@
 import React, { useState } from 'react';
 import { SERVICES, WHY_CHOOSE_ITEMS, TESTIMONIALS, SITE_INFO } from '../data/siteData';
-import { HeroSvgPattern } from '../components/HeroSvgPattern';
+import { ENERGY_FLOW, HOME_STATS } from '../content/site';
+import { useSiteNav } from '../hooks/useSiteNav';
+import { Reveal, RevealFade } from '../components/motion/Reveal';
+import { RevealText, ScrubWords } from '../components/motion/RevealText';
+import { ImageReveal } from '../components/motion/ImageReveal';
+import { MagneticButton } from '../components/motion/MagneticButton';
+import { InlineCounter } from '../components/motion/AnimatedCounter';
+import { HorizontalScroll } from '../components/motion/HorizontalScroll';
+import { SectionIndicator } from '../components/motion/SectionIndicator';
+import { EnergyFlow } from '../components/svg/EnergyFlow';
+import { SunriseHero } from '../components/hero/SunriseHero';
 
 interface HomePageProps {
   onNavigate: (path: string) => void;
 }
+
+const CHAPTERS = [
+  { id: 'hero', label: 'Dawn' },
+  { id: 'brief', label: 'The Brief' },
+  { id: 'services', label: 'Capabilities' },
+  { id: 'about', label: 'The Studio' },
+  { id: 'trust', label: 'Standards' },
+  { id: 'voices', label: 'Voices' },
+  { id: 'contact', label: 'Dusk' },
+];
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -16,6 +36,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const prevTestimonial = () => {
     setActiveTestimonial((prev) => (prev === 0 ? TESTIMONIALS.length - 1 : prev - 1));
   };
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -45,359 +66,329 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="relative w-full overflow-hidden">
-      {/* HERO SECTION - Extends seamlessly under transparent logo & menu bar */}
-      <section className="relative min-h-screen flex items-center justify-center pt-28 sm:pt-36 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* High-Visibility Solar Geometric SVG Pattern & Radiant Burst Background */}
-        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden [contain:paint]" aria-hidden="true">
-          {/* Distinct Crystalline Photovoltaic Pattern for Hero - Highly Visible */}
-          <HeroSvgPattern opacity={0.65} />
+    <div className="relative w-full overflow-x-hidden">
+      <SectionIndicator sections={CHAPTERS} />
 
-          {/* Radiant Solar Burst Glow */}
-          <svg className="absolute -top-12 left-1/2 w-[1100px] h-[750px] opacity-40 animate-pulse will-change-opacity [transform:translate3d(-50%,0,0)] [backface-visibility:hidden]" viewBox="0 0 1000 700">
-            <defs>
-              <radialGradient id="heroSunGlow" cx="50%" cy="20%" r="65%">
-                <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.45" />
-                <stop offset="45%" stopColor="#fb7185" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-            <circle cx="500" cy="140" r="420" fill="url(#heroSunGlow)" />
-            {/* Radiant Solar Arcs */}
-            <path d="M 150 550 Q 500 50 850 550" fill="none" stroke="rgba(14, 165, 233, 0.3)" strokeWidth="1.5" strokeDasharray="8 6" />
-            <path d="M 220 580 Q 500 120 780 580" fill="none" stroke="rgba(244, 63, 94, 0.25)" strokeWidth="1.2" strokeDasharray="6 8" />
-            <path d="M 290 610 Q 500 190 710 610" fill="none" stroke="rgba(56, 189, 248, 0.35)" strokeWidth="1" />
-          </svg>
-        </div>
+      {/* ================================================================
+          DAWN — hero. Owns its own calm navy backdrop so the header stays
+          legible; the global sky/sun layers are suppressed for this route.
+          ================================================================ */}
+      <SunriseHero onNavigate={onNavigate} />
 
-        <div className="max-w-4xl mx-auto w-full text-center flex flex-col items-center space-y-8 relative z-10">
-          
-          <div className="inline-block px-4 py-1.5 rounded-full bg-rose-50/90 border border-rose-200/80 text-rose-700 text-xs sm:text-sm font-medium backdrop-blur-sm shadow-xs">
-            Leading Renewable &amp; Power Infrastructure EPC
+      {/* ================================================================
+          THE BRIEF — how a solar system actually works, and what we do.
+          ================================================================ */}
+      <section id="brief" className="scene-ink relative scroll-mt-28 overflow-hidden py-24 sm:py-32">
+        <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-30" aria-hidden="true" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-end gap-8 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <span className="mono-label text-sun-300/70">01 — The Brief</span>
+              <RevealText
+                as="h2"
+                lines={['How solar', 'becomes power']}
+                className="mt-4 font-display text-3xl font-bold leading-[1.1] tracking-tight text-white sm:text-4xl lg:text-5xl"
+              />
+            </div>
+            <RevealFade className="lg:col-span-5">
+              <p className="text-sm leading-relaxed text-dawn-200/70 sm:text-base">
+                Five stages sit between a photon and a working outlet. We build, install and
+                commission every one of them — no handoffs to a third party in the middle.
+              </p>
+            </RevealFade>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15] max-w-3xl">
-            Powering a Sustainable Future with{' '}
-            <span className="bg-gradient-to-r from-sky-600 via-rose-500 to-rose-600 bg-clip-text text-transparent">
-              Solar Innovation
-            </span>
-          </h1>
+          {/* Energy flow diagram */}
+          <Reveal className="mt-14">
+            <EnergyFlow className="h-auto w-full" />
+          </Reveal>
 
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl font-normal">
-            Since 2016, Solar Tech Systems has been a trusted provider of high-quality solar solutions, offering solar fencing, street lights, water heaters, irrigation pumps, and turnkey megawatt plants across Karnataka.
-          </p>
-
-          {/* CTAs */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="contact-us.html"
-              onClick={(e) => { e.preventDefault(); onNavigate('contact-us.html'); }}
-              className="inline-flex items-center justify-center px-7 py-3.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0"
-            >
-              <span>Enquire Now &rarr;</span>
-            </a>
-
-            <a
-              href="#services"
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="inline-flex items-center justify-center px-6 py-3.5 rounded-full text-sm font-semibold text-slate-700 bg-white/90 hover:bg-sky-50 hover:text-sky-700 border border-slate-200 shadow-sm transition-all duration-200"
-            >
-              <span>What We Offer</span>
-            </a>
+          {/* Stage list */}
+          <div className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:grid-cols-2 lg:grid-cols-5">
+            {ENERGY_FLOW.map((stage, i) => (
+              <Reveal
+                key={stage.id}
+                delay={i * 0.07}
+                className="group relative bg-ink-950/60 p-6 transition-colors hover:bg-ink-900/80"
+              >
+                <div className="mono-label text-sun-300/50">{String(i + 1).padStart(2, '0')}</div>
+                <h3 className="mt-3 text-base font-semibold text-white">{stage.title}</h3>
+                <p className="mt-2 text-xs leading-relaxed text-dawn-200/60">{stage.caption}</p>
+                <div className="hairline mt-4" aria-hidden="true" />
+              </Reveal>
+            ))}
           </div>
 
-          {/* Micro stats banner */}
-          <div className="pt-8 border-t border-slate-200/80 grid grid-cols-3 gap-6 max-w-xl mx-auto w-full text-center">
-            <div>
-              <div className="text-2xl sm:text-3xl font-bold text-slate-900 font-display">2016</div>
-              <div className="text-xs sm:text-sm text-slate-500">Established In</div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-bold text-sky-600 font-display">33 kV</div>
-              <div className="text-xs sm:text-sm text-slate-500">Grid Substation EPC</div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-bold text-rose-600 font-display">100%</div>
-              <div className="text-xs sm:text-sm text-slate-500">Quality Certified</div>
-            </div>
-          </div>
-
+          {/* Verified facts only — sourced from siteData, nothing invented */}
+          <Reveal
+            stagger={0.08}
+            className="mt-16 grid grid-cols-2 gap-8 border-t border-white/10 pt-10 lg:grid-cols-4"
+          >
+            {HOME_STATS.map((stat) => (
+              <div key={stat.label}>
+                <div className="font-display text-3xl font-bold text-sun-300 sm:text-4xl">
+                  {stat.value == null ? (
+                    stat.label
+                  ) : (
+                    <InlineCounter value={stat.value} suffix={stat.suffix} />
+                  )}
+                </div>
+                {stat.value != null && (
+                  <div className="mt-1 text-sm font-medium text-white/90">{stat.label}</div>
+                )}
+                <p className="mt-2 text-xs leading-relaxed text-dawn-200/55">{stat.detail}</p>
+              </div>
+            ))}
+          </Reveal>
         </div>
       </section>
 
-      {/* ABOUT US SECTION */}
-      <section id="about" className="py-20 px-4 sm:px-6 lg:px-8 bg-white/80 border-y border-slate-200/60 relative overflow-hidden scroll-mt-28">
-        {/* Subtle Background SVG Wave Accents */}
-        <div className="absolute inset-0 pointer-events-none opacity-30" aria-hidden="true">
-          <svg className="w-full h-full" viewBox="0 0 1200 400" preserveAspectRatio="none">
-            <path d="M0,80 C300,160 600,20 900,120 C1050,170 1150,100 1200,90" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="6 6" />
-            <path d="M0,180 C350,260 700,110 1000,210 C1120,250 1180,200 1200,190" fill="none" stroke="#fb7185" strokeWidth="1.2" strokeDasharray="8 8" />
-          </svg>
+      {/* ================================================================
+          CAPABILITIES — pinned horizontal track on desktop, native
+          scroll-snap carousel on touch.
+          ================================================================ */}
+      <section id="services" className="scene-ink relative scroll-mt-28 py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <span className="mono-label text-sun-300/70">02 — Our Capabilities</span>
+            <RevealText
+              as="h2"
+              lines={['What We Offer']}
+              className="mt-4 font-display text-3xl font-bold tracking-tight text-white sm:text-4xl"
+            />
+            <RevealFade delay={0.1} className="mx-auto mt-4 max-w-2xl">
+              <p className="text-sm text-dawn-200/70 sm:text-base">
+                End-to-end solar solutions, commercial rooftops, high-voltage transmission
+                lines, and compact substations.
+              </p>
+            </RevealFade>
+          </div>
         </div>
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
-          
-          <div className="lg:col-span-6 space-y-6">
-            <span className="text-xs font-semibold tracking-wider uppercase text-rose-600 font-sans">
-              About Solartech Systems
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Leading the Clean Energy Transition Across Karnataka
-            </h2>
-            <div className="space-y-4 text-slate-600 text-sm sm:text-base leading-relaxed">
-              <p>
-                Solar Tech Systems, incorporated in the year 2011 have established ourselves as a leading supplier of quality assured range of solar products such as Solar Power Fencing, Solar Street Lights, Solar Water Heaters, Solar Irrigation Pump, Solar Power Plant and Roof structures etc.
-              </p>
-              <p>
-                All these products are designed by our well-trained professionals using high grade material in accordance with the industry standards. We are the market leaders in delivering high quality technology Solar Products and Service to our esteemed clients pan Karnataka.
-              </p>
-            </div>
+        <HorizontalScroll
+          length={1.6}
+          className="mt-14"
+          trackClassName="gap-5 py-4 px-6 sm:gap-6 lg:px-[max(3rem,calc((100vw-80rem)/2))]"
+        >
+          {SERVICES.map((service, index) => (
+            <article
+              key={service.slug}
+              className="group relative flex w-[82vw] max-w-[30rem] shrink-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink-900/70 sm:w-[70vw]"
+            >
+              <div className="relative h-56 w-full overflow-hidden sm:h-64">
+                <img
+                  src={service.img}
+                  alt={service.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent" />
+                <span className="mono-label absolute left-5 top-5 rounded-full border border-white/15 bg-black/40 px-2.5 py-1 text-white/70 backdrop-blur-sm">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+              </div>
 
-            <div className="pt-2">
+              <div className="flex flex-1 flex-col justify-between gap-5 p-6">
+                <div>
+                  <h3 className="font-display text-xl font-bold text-white">{service.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-dawn-200/65">{service.desc}</p>
+                </div>
+                <MagneticButton
+                  variant="ghost"
+                  href={service.file}
+                  onClick={(e) => { e.preventDefault(); onNavigate(service.file); }}
+                  arrow
+                >
+                  Read More
+                </MagneticButton>
+              </div>
+            </article>
+          ))}
+        </HorizontalScroll>
+      </section>
+
+      {/* ================================================================
+          THE STUDIO — paper. The one light surface in the document, so the
+          eye rests before the closing movement.
+          ================================================================ */}
+      <section id="about" className="scene-paper relative scroll-mt-28 overflow-hidden py-24 sm:py-32">
+        <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8">
+          <div className="space-y-6 lg:col-span-6">
+            <span className="mono-label text-ink-900/50">03 — About Solartech Systems</span>
+            <RevealText
+              as="h2"
+              lines={['Leading the Clean', 'Energy Transition', 'Across Karnataka']}
+              className="font-display text-3xl font-bold leading-[1.12] tracking-tight text-ink-950 sm:text-4xl"
+            />
+            <ScrubWords
+              as="p"
+              text="Solar Tech Systems, incorporated in the year 2011 have established ourselves as a leading supplier of quality assured range of solar products such as Solar Power Fencing, Solar Street Lights, Solar Water Heaters, Solar Irrigation Pump, Solar Power Plant and Roof structures etc."
+              className="text-sm leading-relaxed text-slate-700 sm:text-base"
+            />
+            <ScrubWords
+              as="p"
+              text="All these products are designed by our well-trained professionals using high grade material in accordance with the industry standards. We are the market leaders in delivering high quality technology Solar Products and Service to our esteemed clients pan Karnataka."
+              className="text-sm leading-relaxed text-slate-700 sm:text-base"
+            />
+            <Reveal className="pt-2">
               <a
                 href="about-us.html"
                 onClick={(e) => { e.preventDefault(); onNavigate('about-us.html'); }}
-                className="inline-flex items-center px-5 py-2.5 rounded-full text-sm font-semibold text-slate-800 bg-slate-100 hover:bg-slate-200 transition-colors"
+                className="hairline-btn inline-flex items-center gap-2 text-sm font-semibold text-ink-950"
               >
-                <span>Read More &rarr;</span>
+                <span>Read More</span>
+                <span aria-hidden="true">&rarr;</span>
               </a>
-            </div>
+            </Reveal>
           </div>
 
           <div className="lg:col-span-6">
-            <div className="relative rounded-2xl overflow-hidden shadow-lg solar-glass-card p-2">
-              <img
-                src="/images/about-solar.jpg"
-                alt="Solar Tech Systems solar installation and engineering team"
-                className="w-full h-auto object-cover rounded-xl"
-              />
-              <div className="p-4 bg-slate-50/90 rounded-lg mt-2 text-xs text-slate-500 flex items-center justify-between">
-                <span>Certified Engineering Standards</span>
-                <span className="text-rose-600 font-medium">Pan-Karnataka Operations</span>
-              </div>
-            </div>
+            <ImageReveal
+              src="/images/about-solar.jpg"
+              alt="Solar Tech Systems solar installation and engineering team"
+              wrapperClassName="relative overflow-hidden rounded-2xl border border-ink-950/10 shadow-2xl"
+              from="left"
+              sizes="(min-width: 1024px) 50vw, 100vw"
+            />
+            <RevealFade delay={0.15} className="mt-3 flex items-center justify-between text-xs text-slate-500">
+              <span>Certified Engineering Standards</span>
+              <span className="font-medium text-ember-500">Pan-Karnataka Operations</span>
+            </RevealFade>
           </div>
-
         </div>
       </section>
 
-      {/* WHAT WE OFFER / PRODUCTS & SERVICES */}
-      <section id="services" className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden scroll-mt-28">
-        {/* Background SVG Geometric Energy Wave */}
-        <div className="absolute inset-0 pointer-events-none opacity-25" aria-hidden="true">
-          <svg className="w-full h-full" viewBox="0 0 1200 600" preserveAspectRatio="none">
-            <path d="M-50,300 Q300,50 600,320 T1250,280" fill="none" stroke="#0ea5e9" strokeWidth="2" strokeDasharray="10 8" />
-            <path d="M-50,380 Q350,150 700,420 T1250,360" fill="none" stroke="#f43f5e" strokeWidth="1.5" strokeDasharray="8 6" />
-          </svg>
-        </div>
-
-        <div className="max-w-7xl mx-auto space-y-12 relative z-10">
-          
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-semibold tracking-wider uppercase text-sky-600 font-sans">
-              Our Capabilities
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              What <span className="text-rose-600">We Offer</span>
-            </h2>
-            <div className="w-12 h-1 bg-gradient-to-r from-sky-400 to-rose-400 mx-auto rounded-full" />
-            <p className="text-sm sm:text-base text-slate-600">
-              End-to-end solar solutions, commercial rooftops, high-voltage transmission lines, and compact substations.
-            </p>
+      {/* ================================================================
+          STANDARDS
+          ================================================================ */}
+      <section id="trust" className="scene-ink relative scroll-mt-28 overflow-hidden py-24 sm:py-32">
+        <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-20" aria-hidden="true" />
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="mono-label text-sun-300/70">04 — Trust &amp; Certification</span>
+            <RevealText
+              as="h2"
+              lines={['Why Choose', 'Solar Tech Systems ?']}
+              className="mt-4 font-display text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-4xl"
+            />
+            <RevealFade delay={0.1} className="mt-5">
+              <p className="text-sm text-dawn-200/70 sm:text-base">
+                At Solar Tech Systems, we are committed to delivering the highest standards of
+                quality and service. Here is why you can trust us for your solar energy and power
+                infrastructure solutions.
+              </p>
+            </RevealFade>
           </div>
 
-          {/* 4 Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {SERVICES.map((service, index) => (
-              <div
-                key={service.slug}
-                className="group relative flex flex-col solar-glass-card rounded-2xl overflow-hidden transition-all duration-300 transform hover:-translate-y-1"
-              >
-                <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-                  <img
-                    src={service.img}
-                    alt={service.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/10 to-transparent" />
-                  <span className="absolute bottom-3 left-3 text-xs font-semibold text-white px-2.5 py-1 rounded bg-black/40 backdrop-blur-sm">
-                    0{index + 1}
-                  </span>
-                </div>
-
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-rose-600 transition-colors">
-                      {service.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-slate-600 line-clamp-3 leading-relaxed">
-                      {service.desc}
-                    </p>
-                  </div>
-
-                  <div className="pt-2">
-                    <a
-                      href={service.file}
-                      onClick={(e) => { e.preventDefault(); onNavigate(service.file); }}
-                      className="text-xs font-semibold text-rose-600 hover:text-rose-700"
-                    >
-                      Read More &rarr;
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* WHY CHOOSE SOLAR TECH SYSTEMS */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50/70 border-y border-slate-200/60 relative overflow-hidden">
-        {/* Background SVG Grid Pattern */}
-        <div className="absolute inset-0 pointer-events-none opacity-20" aria-hidden="true">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="whyPattern" width="40" height="40" patternUnits="userSpaceOnUse">
-                <circle cx="20" cy="20" r="1.2" fill="#0284c7" />
-                <path d="M 0 20 L 40 20 M 20 0 L 20 40" stroke="rgba(244, 63, 94, 0.15)" strokeWidth="0.5" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#whyPattern)" />
-          </svg>
-        </div>
-
-        <div className="max-w-7xl mx-auto space-y-12 relative z-10">
-          
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-semibold tracking-wider uppercase text-rose-600 font-sans">
-              Trust &amp; Certification
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Why Choose <span className="text-sky-600">Solar Tech Systems</span> ?
-            </h2>
-            <div className="w-12 h-1 bg-gradient-to-r from-rose-400 to-sky-400 mx-auto rounded-full" />
-            <p className="text-sm sm:text-base text-slate-600">
-              At Solar Tech Systems, we are committed to delivering the highest standards of quality and service. Here is why you can trust us for your solar energy and power infrastructure solutions.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {WHY_CHOOSE_ITEMS.map((item) => (
-              <div
+          <Reveal stagger={0.12} className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
+            {WHY_CHOOSE_ITEMS.map((item, i) => (
+              <article
                 key={item.id}
-                className="solar-glass-card p-8 rounded-2xl transition-all text-center flex flex-col items-center space-y-4"
+                className="group relative flex flex-col items-center space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center transition-colors duration-500 hover:border-sun-400/30 hover:bg-white/[0.06]"
               >
-                <div className="px-3.5 py-1 rounded-full text-xs font-bold text-sky-700 bg-sky-50 border border-sky-100 uppercase tracking-wider">
+                <span className="crosshair absolute right-5 top-5 text-white/20" aria-hidden="true" />
+                <div className="mono-label rounded-full border border-sun-400/25 bg-sun-400/10 px-3.5 py-1 text-sun-300">
                   {item.badge}
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  {item.text}
-                </p>
-              </div>
+                <h3 className="font-display text-xl font-bold text-white">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-dawn-200/65">{item.text}</p>
+                <span className="mono-label absolute -bottom-px left-1/2 -translate-x-1/2 text-[0.6rem] text-white/15">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </article>
             ))}
-          </div>
-
+          </Reveal>
         </div>
       </section>
 
-      {/* CLIENT TESTIMONIALS */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Background Ripple Arcs SVG */}
-        <div className="absolute inset-0 pointer-events-none opacity-20 flex items-center justify-center" aria-hidden="true">
-          <svg width="800" height="400" viewBox="0 0 800 400">
-            <ellipse cx="400" cy="200" rx="350" ry="160" fill="none" stroke="#38bdf8" strokeWidth="1" strokeDasharray="8 8" />
-            <ellipse cx="400" cy="200" rx="250" ry="110" fill="none" stroke="#fb7185" strokeWidth="1" strokeDasharray="6 6" />
-            <ellipse cx="400" cy="200" rx="150" ry="65" fill="none" stroke="#0ea5e9" strokeWidth="1" />
-          </svg>
-        </div>
-
-        <div className="max-w-5xl mx-auto space-y-10 relative z-10">
-          <div className="text-center space-y-2">
-            <span className="text-xs font-semibold tracking-wider uppercase text-sky-600 font-sans">
-              Feedback &amp; Reputation
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Customer Feedback &amp; Shared Experiences
-            </h2>
-            <p className="text-sm text-slate-600 max-w-xl mx-auto">
-              A few words from the businesses and homeowners we have worked with across Karnataka.
-            </p>
+      {/* ================================================================
+          VOICES
+          ================================================================ */}
+      <section id="voices" className="scene-ink relative scroll-mt-28 overflow-hidden py-24 sm:py-32">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <span className="mono-label text-sun-300/70">05 — Feedback &amp; Reputation</span>
+            <RevealText
+              as="h2"
+              lines={['Customer Feedback', '& Shared Experiences']}
+              className="mt-4 font-display text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-4xl"
+            />
+            <RevealFade delay={0.1} className="mt-4">
+              <p className="mx-auto max-w-xl text-sm text-dawn-200/70">
+                A few words from the businesses and homeowners we have worked with across
+                Karnataka.
+              </p>
+            </RevealFade>
           </div>
 
-          {/* Carousel Layout with Left / Right Navigation */}
-          <div className="relative flex items-center justify-center gap-3 sm:gap-6">
-            {/* Left Carousel Navigation Button */}
+          <div className="relative mt-12 flex items-center justify-center gap-3 sm:gap-6">
             <button
               type="button"
               onClick={prevTestimonial}
               aria-label="Previous customer feedback"
-              className="z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center solar-glass-card text-slate-700 hover:text-rose-600 hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer shrink-0"
+              className="z-20 flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:border-sun-400/40 hover:text-sun-300 active:scale-95 sm:h-12 sm:w-12"
             >
-              <span className="text-xl sm:text-2xl font-bold leading-none select-none" aria-hidden="true">&larr;</span>
+              <span className="select-none text-xl leading-none sm:text-2xl" aria-hidden="true">&larr;</span>
             </button>
 
-            {/* Main Carousel Card */}
-            <div className="flex-1 max-w-3xl relative solar-glass-card rounded-2xl p-6 sm:p-10 shadow-lg overflow-hidden transition-all duration-300">
-              {/* Carousel Slide Header / Counter */}
-              <div className="flex items-center justify-between text-xs text-slate-400 pb-4 border-b border-slate-100/70 mb-6">
-                <span className="font-semibold text-rose-600 uppercase tracking-wider">
+            <RevealFade
+              className="relative min-h-[15rem] flex-1 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-10"
+            >
+              <div className="flex items-center justify-between border-b border-white/10 pb-4 text-xs">
+                <span className="font-semibold uppercase tracking-wider text-sun-300">
                   Verified Client Review
                 </span>
-                <span className="font-mono text-slate-500 font-medium">
+                <span className="font-mono text-dawn-200/50">
                   {String(activeTestimonial + 1).padStart(2, '0')} / {String(TESTIMONIALS.length).padStart(2, '0')}
                 </span>
               </div>
 
-              <blockquote className="text-base sm:text-lg text-slate-800 italic leading-relaxed text-center min-h-[110px] flex items-center justify-center px-2 sm:px-6">
-                "{TESTIMONIALS[activeTestimonial].quote}"
+              <blockquote
+                className="flex min-h-[8rem] items-center justify-center px-2 py-8 text-center text-base italic leading-relaxed text-white/90 sm:px-6 sm:text-lg"
+                aria-live="polite"
+              >
+                &ldquo;{TESTIMONIALS[activeTestimonial].quote}&rdquo;
               </blockquote>
 
-              <div className="mt-8 pt-6 border-t border-slate-100/70 flex items-center justify-center gap-4">
+              <div className="flex items-center justify-center gap-4 border-t border-white/10 pt-6">
                 <img
                   src={TESTIMONIALS[activeTestimonial].avatar}
                   alt={TESTIMONIALS[activeTestimonial].name}
-                  className="w-12 h-12 rounded-full border-2 border-rose-300 shadow-sm object-cover"
+                  loading="lazy"
+                  className="h-12 w-12 rounded-full border-2 border-sun-400/40 object-cover"
                 />
                 <div className="text-left">
-                  <div className="font-bold text-slate-900 text-sm sm:text-base">
+                  <div className="text-sm font-bold text-white sm:text-base">
                     {TESTIMONIALS[activeTestimonial].name}
                   </div>
-                  <div className="text-xs sm:text-sm text-slate-500">
+                  <div className="text-xs text-dawn-200/60 sm:text-sm">
                     {TESTIMONIALS[activeTestimonial].role}
                   </div>
                 </div>
               </div>
-            </div>
+            </RevealFade>
 
-            {/* Right Carousel Navigation Button */}
             <button
               type="button"
               onClick={nextTestimonial}
               aria-label="Next customer feedback"
-              className="z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center solar-glass-card text-slate-700 hover:text-rose-600 hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer shrink-0"
+              className="z-20 flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all hover:border-sun-400/40 hover:text-sun-300 active:scale-95 sm:h-12 sm:w-12"
             >
-              <span className="text-xl sm:text-2xl font-bold leading-none select-none" aria-hidden="true">&rarr;</span>
+              <span className="select-none text-xl leading-none sm:text-2xl" aria-hidden="true">&rarr;</span>
             </button>
           </div>
 
-          {/* Bottom Dot Indicators */}
-          <div className="flex justify-center items-center gap-2 pt-2">
-            {TESTIMONIALS.map((_, i) => (
+          <div className="mt-8 flex items-center justify-center gap-2">
+            {TESTIMONIALS.map((t, i) => (
               <button
-                key={i}
+                key={t.name}
                 onClick={() => setActiveTestimonial(i)}
                 aria-label={`Go to feedback slide ${i + 1}`}
-                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  i === activeTestimonial 
-                    ? 'w-8 bg-gradient-to-r from-sky-500 to-rose-500 shadow-xs' 
-                    : 'w-2.5 bg-slate-200 hover:bg-slate-300'
+                aria-current={i === activeTestimonial}
+                className={`h-2.5 cursor-pointer rounded-full transition-all duration-300 ${
+                  i === activeTestimonial ? 'w-8 bg-sun-400' : 'w-2.5 bg-white/15 hover:bg-white/30'
                 }`}
               />
             ))}
@@ -405,98 +396,109 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* GET IN TOUCH / CONTACT SECTION */}
-      <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-slate-50 dark:from-[#0b0c10] dark:via-[#070709] dark:to-black border-t border-slate-200/80 dark:border-slate-800/80 relative overflow-hidden scroll-mt-28">
-        {/* Decorative Grid & Contour SVG */}
-        <div className="absolute inset-0 pointer-events-none opacity-20" aria-hidden="true">
-          <svg className="w-full h-full" viewBox="0 0 1000 600" preserveAspectRatio="none">
-            <path d="M0,50 Q250,200 500,80 T1000,180" fill="none" stroke="#0ea5e9" strokeWidth="1.5" strokeDasharray="6 6" />
-            <path d="M0,250 Q300,100 600,280 T1000,220" fill="none" stroke="#f43f5e" strokeWidth="1.2" strokeDasharray="8 8" />
-          </svg>
-        </div>
+      {/* ================================================================
+          DUSK — contact. The sun is low here; the sky layer has warmed
+          to ember by the time this section arrives.
+          ================================================================ */}
+      <section id="contact" className="scene-ink relative scroll-mt-28 overflow-hidden py-24 sm:py-32">
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-96"
+          aria-hidden="true"
+          style={{
+            background:
+              'radial-gradient(90% 100% at 50% 120%, rgba(255,107,53,0.18) 0%, transparent 70%)',
+          }}
+        />
 
-        <div className="max-w-7xl mx-auto space-y-12 relative z-10">
-          
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-semibold tracking-wider uppercase text-rose-600 font-sans">
-              Contact
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Get In Touch <span className="text-sky-600">With Us</span>
-            </h2>
-            <div className="w-12 h-1 bg-gradient-to-r from-rose-400 to-sky-400 mx-auto rounded-full" />
-            <p className="text-sm sm:text-base text-slate-600">
-              Reach out to us through the enquiry form or contact details provided below. We are here to assist with any questions or provide more information about our products and services.
-            </p>
+        <div className="relative z-10 mx-auto max-w-7xl space-y-14 px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="mono-label text-sun-300/70">06 — Contact</span>
+            <RevealText
+              as="h2"
+              lines={['Get In Touch', 'With Us']}
+              className="mt-4 font-display text-3xl font-bold leading-[1.12] tracking-tight text-white sm:text-4xl"
+            />
+            <RevealFade delay={0.1} className="mt-5">
+              <p className="text-sm text-dawn-200/70 sm:text-base">
+                Reach out to us through the enquiry form or contact details provided below. We
+                are here to assist with any questions or provide more information about our
+                products and services.
+              </p>
+            </RevealFade>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-            
-            {/* Contact Details List */}
-            <div className="lg:col-span-5 space-y-6 solar-glass-card p-6 sm:p-8 rounded-2xl">
-              <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-10">
+            {/* Contact details */}
+            <RevealFade className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 lg:col-span-5 sm:p-8">
+              <h3 className="border-b border-white/10 pb-3 text-lg font-bold text-white">
                 Corporate Office &amp; Support
               </h3>
 
-              <div className="space-y-5">
+              <div className="mt-6 space-y-6">
                 <div>
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Phone</h4>
-                  <a href={SITE_INFO.phoneHref} className="text-base font-bold text-slate-800 hover:text-rose-600 transition-colors">
+                  <h4 className="mono-label text-dawn-200/40">Phone</h4>
+                  <a href={SITE_INFO.phoneHref} className="mt-1 block text-base font-bold text-white transition-colors hover:text-sun-300">
                     {SITE_INFO.phone}
                   </a>
-                  <div className="text-xs text-slate-500 mt-0.5">Alt: +91 8945361784</div>
+                  <div className="mt-0.5 text-xs text-dawn-200/50">Alt: +91 8945361784</div>
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Email</h4>
-                  <a href={`mailto:${SITE_INFO.email}`} className="text-base font-bold text-slate-800 hover:text-sky-600 transition-colors">
+                  <h4 className="mono-label text-dawn-200/40">Email</h4>
+                  <a href={`mailto:${SITE_INFO.email}`} className="mt-1 block text-base font-bold text-white transition-colors hover:text-sun-300">
                     {SITE_INFO.email}
                   </a>
-                  <div className="text-xs text-slate-500 mt-0.5">Alt: info@sts.in</div>
+                  <div className="mt-0.5 text-xs text-dawn-200/50">Alt: info@sts.in</div>
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Location</h4>
-                  <p className="text-base font-bold text-slate-800">
-                    Bangalore, Karnataka, India
-                  </p>
-                  <p className="text-xs text-slate-500 mt-0.5">Operations Pan Karnataka</p>
+                  <h4 className="mono-label text-dawn-200/40">Location</h4>
+                  <p className="mt-1 text-base font-bold text-white">Bangalore, Karnataka, India</p>
+                  <p className="mt-0.5 text-xs text-dawn-200/50">Operations Pan Karnataka</p>
                 </div>
               </div>
-            </div>
+            </RevealFade>
 
-            {/* Interactive Enquiry Form */}
-            <div className="lg:col-span-7 solar-glass-card p-6 sm:p-8 rounded-2xl">
+            {/* Enquiry form */}
+            <RevealFade delay={0.1} className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 lg:col-span-7 sm:p-8">
               {formSubmitted ? (
-                <div className="p-8 text-center space-y-4">
-                  <div className="inline-block px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider border border-emerald-200">
+                <div className="space-y-4 p-8 text-center">
+                  <div className="inline-block rounded-full border border-leaf-400/30 bg-leaf-400/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-leaf-400">
                     Confirmation Received
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900">Enquiry Submitted Successfully</h3>
-                  <p className="text-sm text-slate-600 max-w-md mx-auto">
-                    Thank you, <span className="font-semibold">{formData.name}</span>. Our solar engineering team will review your project requirements and contact you within one business day.
+                  <h3 className="text-xl font-bold text-white">Enquiry Submitted Successfully</h3>
+                  <p className="mx-auto max-w-md text-sm text-dawn-200/70">
+                    Thank you, <span className="font-semibold text-white">{formData.name}</span>. Our
+                    solar engineering team will review your project requirements and contact you
+                    within one business day.
                   </p>
+                  {/* TODO: confirm with client — there is no backend. This form is
+                      local state only, exactly as it shipped. Wire to an endpoint or
+                      a mailto: fallback when the destination is confirmed. */}
                   <button
                     onClick={() => {
                       setFormSubmitted(false);
                       setFormData({ name: '', email: '', mobile: '', message: '' });
                     }}
-                    className="mt-4 px-6 py-2 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+                    className="mt-4 cursor-pointer rounded-full border border-white/15 px-6 py-2 text-xs font-semibold text-white/80 transition-colors hover:bg-white/5"
                   >
                     Submit Another Query
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4" noValidate={false}>
                   {formError && (
-                    <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+                    <div
+                      role="alert"
+                      className="rounded-lg border border-ember-500/30 bg-ember-500/10 p-3 text-xs font-medium text-ember-500"
+                    >
                       {formError}
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-1">
-                      <label htmlFor="home-name" className="text-xs font-medium text-slate-700 uppercase tracking-wider">
+                      <label htmlFor="home-name" className="mono-label text-dawn-200/50">
                         Name *
                       </label>
                       <input
@@ -506,13 +508,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                         value={formData.name}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400 text-sm text-slate-800"
+                        autoComplete="name"
+                        className="field-dark"
                         placeholder="Your full name"
                       />
                     </div>
 
                     <div className="space-y-1">
-                      <label htmlFor="home-email" className="text-xs font-medium text-slate-700 uppercase tracking-wider">
+                      <label htmlFor="home-email" className="mono-label text-dawn-200/50">
                         Email *
                       </label>
                       <input
@@ -522,14 +525,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400 text-sm text-slate-800"
+                        autoComplete="email"
+                        className="field-dark"
                         placeholder="you@domain.com"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label htmlFor="home-mobile" className="text-xs font-medium text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="home-mobile" className="mono-label text-dawn-200/50">
                       Mobile Number *
                     </label>
                     <input
@@ -539,13 +543,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                       value={formData.mobile}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400 text-sm text-slate-800"
+                      autoComplete="tel"
+                      className="field-dark"
                       placeholder="+91 98765 43210"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label htmlFor="home-message" className="text-xs font-medium text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="home-message" className="mono-label text-dawn-200/50">
                       Message / Project Details
                     </label>
                     <textarea
@@ -554,46 +559,42 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                       rows={4}
                       value={formData.message}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-400 text-sm text-slate-800 resize-y"
+                      className="field-dark resize-y"
                       placeholder="Please mention your required capacity, rooftop type, or location..."
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 shadow-sm transition-all duration-200 cursor-pointer"
-                  >
-                    Send Enquiry &rarr;
-                  </button>
+                  <MagneticButton type="submit">Send Enquiry</MagneticButton>
                 </form>
               )}
-            </div>
-
+            </RevealFade>
           </div>
 
-          {/* Embedded Map */}
-          <div className="rounded-2xl overflow-hidden solar-glass-card p-3">
+          {/* Map */}
+          <Reveal className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-3">
             <iframe
               title="Solar Tech Systems location - Bangalore, Karnataka"
               src={SITE_INFO.mapEmbed}
-              className="w-full h-80 sm:h-96 rounded-xl border-0"
+              className="h-80 w-full rounded-xl border-0 sm:h-96"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen
             />
-            <div className="pt-3 px-2 flex justify-between items-center text-xs text-slate-500">
-              <span>Headquartered in Bangalore, serving commercial &amp; industrial clients across Karnataka.</span>
+            <div className="flex flex-col items-center justify-between gap-2 px-2 pt-3 text-xs text-dawn-200/50 sm:flex-row">
+              <span>
+                Headquartered in Bangalore, serving commercial &amp; industrial clients across
+                Karnataka.
+              </span>
               <a
                 href={SITE_INFO.mapLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-rose-600 hover:text-rose-700 font-medium"
+                className="font-medium text-sun-300 transition-colors hover:text-sun-400"
               >
                 Open in Google Maps &rarr;
               </a>
             </div>
-          </div>
-
+          </Reveal>
         </div>
       </section>
     </div>

@@ -48,14 +48,75 @@
   --sky-l2: 97%;
   --sun-angle: 0deg;
   --sun-glow: 0.6;
+
+  /* =====================================================================
+     CINEMATIC PALETTE — "One day of sunlight"
+     ===================================================================== */
+  --ink-950: #050B14;
+  --ink-900: #0A1524;
+  --ink-800: #0F2238;
+
+  --sun-300: #FFD98A;
+  --sun-400: #FFC24D;
+  --sun-500: #FF9F1C;
+  --ember-500: #FF6B35;
+
+  --sky-200: #CFE8FF;
+  --sky-400: #6FB7FF;
+
+  --leaf-400: #4ADE80;
+
+  --paper: #F7F5F0;
+
+  /* Live sky gradient — GSAP tweens these two custom properties.
+     Registered with @property so they interpolate as colours, not as
+     unparsed strings (which would otherwise snap between gradients). */
+  --sky-top: #050B14;
+  --sky-bottom: #0F2238;
+  /* Sun disc colour + glow strength, tweened by the master timeline */
+  --sun-disc: #FFC24D;
+  --sun-glow-strength: 0.35;
+  /* Sun travel across the viewport, 0..1 */
+  --sun-x: 0.18;
+  --sun-y: 0.72;
+  --sun-scale: 1;
+
+  /* Header height is read by CSS so layout never depends on a magic number
+     that can drift out of sync with the component. */
+  --header-h: 88px;
 }
 
 @theme {
-  --font-display: "Outfit", sans-serif;
-  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --color-canvas: var(--bg-canvas);
   --color-primary-blue: var(--blue-600);
   --color-primary-coral: var(--red-600);
+
+  /* ---------------------------------------------------------------------
+     CINEMATIC "ONE DAY OF SUNLIGHT" TOKENS
+     Raw values live on :root above; these map them into Tailwind utilities.
+     Note: sky-200 / sky-400 are exposed as CSS custom properties only
+     (--sky-200 / --sky-400) and deliberately NOT registered here, because
+     Tailwind already owns the `sky-*` colour scale and overriding 200/400
+     would silently restyle the existing pages. Use `dawn-*` utilities.
+     --------------------------------------------------------------------- */
+  --color-ink-950: var(--ink-950);
+  --color-ink-900: var(--ink-900);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: #17304A;
+
+  --color-sun-300: var(--sun-300);
+  --color-sun-400: var(--sun-400);
+  --color-sun-500: var(--sun-500);
+  --color-ember-500: var(--ember-500);
+
+  --color-dawn-200: var(--sky-200);
+  --color-dawn-400: var(--sky-400);
+
+  --color-leaf-400: var(--leaf-400);
+  --color-paper: var(--paper);
 }
 
 html {
@@ -535,3 +596,814 @@ h1, h2, h3, h4, h5, h6 {
     scroll-behavior: auto !important;
   }
 }
+
+/* ========================================================================
+   CINEMATIC SYSTEM
+   ===================================================================== */
+
+/* Register the scroll-driven custom properties so they are typed as
+   <color> and <number>. Without this, GSAP writes strings and the
+   gradient snaps between keyframes instead of interpolating. */
+@property --sky-top {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #050B14;
+}
+@property --sky-bottom {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #0F2238;
+}
+@property --sun-disc {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #FFC24D;
+}
+@property --sun-glow-strength {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.35;
+}
+@property --sun-x {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.18;
+}
+@property --sun-y {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0.72;
+}
+@property --sun-scale {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+html {
+  background-color: var(--ink-950);
+}
+html.light-cinematic body {
+  background-color: var(--paper);
+}
+
+/* ---------------------------------------------------------------------
+   Scroll-linked sky + sun: one fixed layer behind the whole document.
+   Every scene above it is transparent or semi-transparent.
+   --------------------------------------------------------------------- */
+.sky-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -20;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    var(--sky-top) 0%,
+    var(--sky-bottom) 100%
+  );
+}
+
+.sun-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -19;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sun-orb {
+  position: absolute;
+  left: calc(var(--sun-x) * 100%);
+  top: calc(var(--sun-y) * 100%);
+  width: 44vmin;
+  height: 44vmin;
+  margin-left: -22vmin;
+  margin-top: -22vmin;
+  border-radius: 9999px;
+  transform: scale(var(--sun-scale));
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--sun-disc) 0%,
+    color-mix(in srgb, var(--sun-disc) 55%, transparent) 38%,
+    transparent 68%
+  );
+  opacity: var(--sun-glow-strength);
+  filter: blur(2px);
+}
+
+.sun-rays {
+  position: absolute;
+  left: calc(var(--sun-x) * 100%);
+  top: calc(var(--sun-y) * 100%);
+  width: 120vmin;
+  height: 120vmin;
+  margin-left: -60vmin;
+  margin-top: -60vmin;
+  opacity: calc(var(--sun-glow-strength) * 0.5);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--sun-disc) 22%, transparent) 8deg,
+    transparent 18deg,
+    color-mix(in srgb, var(--sun-disc) 18%, transparent) 28deg,
+    transparent 40deg,
+    color-mix(in srgb, var(--sun-disc) 24%, transparent) 52deg,
+    transparent 66deg,
+    color-mix(in srgb, var(--sun-disc) 16%, transparent) 80deg,
+    transparent 96deg,
+    color-mix(in srgb, var(--sun-disc) 22%, transparent) 110deg,
+    transparent 128deg,
+    color-mix(in srgb, var(--sun-disc) 18%, transparent) 145deg,
+    transparent 160deg,
+    color-mix(in srgb, var(--sun-disc) 24%, transparent) 178deg,
+    transparent 196deg,
+    color-mix(in srgb, var(--sun-disc) 16%, transparent) 214deg,
+    transparent 232deg,
+    color-mix(in srgb, var(--sun-disc) 22%, transparent) 250deg,
+    transparent 268deg,
+    color-mix(in srgb, var(--sun-disc) 18%, transparent) 286deg,
+    transparent 300deg,
+    color-mix(in srgb, var(--sun-disc) 24%, transparent) 318deg,
+    transparent 340deg,
+    color-mix(in srgb, var(--sun-disc) 16%, transparent) 356deg,
+    transparent 360deg
+  );
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 12%, transparent 62%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 12%, transparent 62%);
+  animation: sun-rotate 140s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes sun-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Scenes
+   --------------------------------------------------------------------- */
+.scene-ink {
+  position: relative;
+  color: #eef4fb;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--ink-950) 82%, transparent) 0%,
+    color-mix(in srgb, var(--ink-900) 88%, transparent) 100%
+  );
+}
+
+.scene-paper {
+  position: relative;
+  color: var(--slate-800);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--paper) 96%, transparent) 0%,
+    color-mix(in srgb, #ffffff 98%, transparent) 100%
+  );
+}
+
+/* Soft scrim guaranteeing AA contrast for text sitting over the sky layer */
+.text-scrim {
+  background: color-mix(in srgb, var(--ink-950) 55%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 1rem;
+}
+
+/* ---------------------------------------------------------------------
+   Blueprint detail language
+   --------------------------------------------------------------------- */
+.blueprint-grid {
+  background-image:
+    linear-gradient(to right, rgba(111, 183, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(111, 183, 255, 0.08) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+.hairline {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 194, 77, 0.45),
+    transparent
+  );
+}
+
+.mono-label {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.crosshair {
+  position: relative;
+}
+.crosshair::before,
+.crosshair::after {
+  content: "";
+  position: absolute;
+  background: rgba(255, 194, 77, 0.4);
+}
+.crosshair::before {
+  left: -10px;
+  top: 50%;
+  width: 6px;
+  height: 1px;
+}
+.crosshair::after {
+  top: -10px;
+  left: 50%;
+  height: 6px;
+  width: 1px;
+}
+
+/* ---------------------------------------------------------------------
+   Masked line reveal — the primitive behind every big headline.
+   GSAP animates the inner span's y; the overflow mask does the revealing.
+   Word mode is inline-block (masks sit in the text flow, gap outside);
+   line mode is block (one mask per line).
+   --------------------------------------------------------------------- */
+.line-mask {
+  display: inline-block;
+  vertical-align: top;
+  overflow: hidden;
+}
+.line-mask[data-line="true"] {
+  display: block;
+}
+.line-mask > span {
+  display: inline-block;
+  will-change: transform;
+}
+.line-mask[data-line="true"] > span {
+  display: block;
+}
+
+/* Word-level scrub (intro statement) */
+.word {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* ---------------------------------------------------------------------
+   Horizontal product track
+   --------------------------------------------------------------------- */
+.snap-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.snap-track::-webkit-scrollbar {
+  display: none;
+}
+.snap-track > * {
+  scroll-snap-align: center;
+  flex: 0 0 auto;
+}
+
+/* ---------------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------------- */
+.btn-sun {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  color: var(--ink-950);
+  background: linear-gradient(
+    100deg,
+    var(--sun-300) 0%,
+    var(--sun-500) 55%,
+    var(--ember-500) 100%
+  );
+  box-shadow: 0 8px 30px -8px rgba(255, 159, 28, 0.55);
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease;
+  will-change: auto;
+}
+.btn-sun:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px -10px rgba(255, 159, 28, 0.7);
+}
+.btn-sun .btn-arrow {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-sun:hover .btn-arrow {
+  transform: translateX(8px);
+}
+
+.btn-ghost {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  color: #eef4fb;
+  border: 1px solid rgba(207, 232, 255, 0.35);
+  background: transparent;
+  overflow: hidden;
+  transition: color 0.3s ease;
+}
+/* Border draws around on hover via a pseudo-element sweep */
+.btn-ghost::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--sun-400);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: -1;
+}
+.btn-ghost:hover {
+  color: var(--ink-950);
+}
+.btn-ghost:hover::after {
+  transform: scaleX(1);
+}
+
+/* ---------------------------------------------------------------------
+   Nav links — left-to-right underline reveal + active dot
+   --------------------------------------------------------------------- */
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(238, 244, 251, 0.78);
+  transition: color 0.25s ease;
+}
+.nav-link::before {
+  content: "";
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 0.35rem;
+  height: 1px;
+  background: var(--sun-400);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nav-link:hover,
+.nav-link:focus-visible {
+  color: #fff;
+}
+.nav-link:hover::before,
+.nav-link:focus-visible::before {
+  transform: scaleX(1);
+}
+.nav-link.is-active {
+  color: var(--sun-300);
+}
+/* Active page dot */
+.nav-link.is-active::after {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--sun-400);
+}
+
+/* ---------------------------------------------------------------------
+   Dark scene form fields
+   --------------------------------------------------------------------- */
+.field-dark {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
+  color: #fff;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+.field-dark::placeholder {
+  color: rgba(207, 232, 255, 0.35);
+}
+.field-dark:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+.field-dark:focus {
+  outline: none;
+  border-color: var(--sun-400);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(255, 194, 77, 0.16);
+}
+.field-dark:user-invalid {
+  border-color: rgba(255, 107, 53, 0.7);
+}
+
+/* Text link with a rule that wipes in on hover. Sits on the paper scene. */
+.hairline-btn {
+  position: relative;
+  padding-bottom: 0.25rem;
+}
+.hairline-btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.28);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hairline-btn:hover::after,
+.hairline-btn:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* ---------------------------------------------------------------------
+   WebGL handoff: while the 3D scene is mounted it owns the sun, so the
+   CSS sun stands down. One sun on screen, never two.
+   --------------------------------------------------------------------- */
+[data-webgl="sun"] .sun-layer,
+[data-hero-sun="local"] .sun-layer {
+  opacity: 0;
+}
+
+/* =====================================================================
+   HERO — "Sunrise over the array"
+
+   The hero owns its own calm navy backdrop rather than inheriting the
+   global sky layer, because the global sun travels across the WHOLE
+   document and would place a 44vmin orb behind the header. Everything
+   here is namespaced under .hero so nothing outside it can be affected.
+   ===================================================================== */
+
+/* Fallback until JS measures the real header (utility strip + nav row). */
+:root {
+  --header-height: 5.5rem;
+}
+
+.hero {
+  min-height: calc(100svh - var(--header-height));
+  background: linear-gradient(to bottom, #050b14 0%, #0a1524 100%);
+}
+
+/* Blueprint grid, faded out toward the edges so it never fights the text. */
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(207, 232, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(207, 232, 255, 0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 30%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(120% 90% at 50% 30%, #000 0%, transparent 72%);
+}
+
+/* Calm navy wash sitting directly behind the header, so the logo and the
+   nav links keep AA contrast without touching the navbar itself. */
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(var(--header-height) + 5rem);
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 11, 20, 0.92) 0%,
+    rgba(5, 11, 20, 0.55) 55%,
+    transparent 100%
+  );
+}
+
+/* Warm bloom anchored where the sun sits, behind the arch frame. */
+.hero-bloom {
+  right: -4%;
+  top: var(--header-height);
+  height: 62%;
+  width: 62%;
+  max-width: 44rem;
+  z-index: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 159, 28, 0.15) 0%,
+    rgba(255, 107, 53, 0.055) 42%,
+    transparent 70%
+  );
+}
+
+/* --- the sun ----------------------------------------------------------
+   The field is anchored to the header's bottom edge and clips its
+   overflow, so the sun cannot paint behind the navbar. An earlier
+   revision let the glow reach y=-108px, which lifted the background
+   under the "ISO Certified" badge from rgb(5,11,20) to rgb(107,74,26)
+   and dropped that text from 7.5:1 to 3.8:1 — below AA. The 3rem mask
+   ramp brings it in gently just below the header instead. */
+.hero-sun-field {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--header-height);
+  bottom: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 3rem);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 3rem);
+}
+
+.hero-sun {
+  position: absolute;
+  left: var(--sun-x, 73%);
+  top: var(--sun-y, 20%);
+  width: 30rem;
+  height: 30rem;
+  margin-left: -15rem;
+  margin-top: -15rem;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.hero-sun-glow,
+.hero-sun-rays,
+.hero-sun-disc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+}
+
+.hero-sun-glow {
+  width: 26rem;
+  height: 26rem;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 194, 77, 0.42) 0%,
+    rgba(255, 159, 28, 0.16) 38%,
+    rgba(255, 107, 53, 0.05) 58%,
+    transparent 72%
+  );
+  filter: blur(10px);
+  animation: hero-sun-pulse 6s ease-in-out infinite;
+}
+
+.hero-sun-disc {
+  width: 11.5rem;
+  height: 11.5rem;
+  background: radial-gradient(
+    circle at 50% 50%,
+    #fff6e0 0%,
+    var(--sun-400) 34%,
+    var(--sun-500) 64%,
+    rgba(255, 107, 53, 0) 78%
+  );
+  box-shadow: 0 0 60px 10px rgba(255, 194, 77, 0.22);
+}
+
+.hero-sun-rays {
+  width: 24rem;
+  height: 24rem;
+  animation: hero-sun-spin 60s linear infinite;
+}
+
+@keyframes hero-sun-spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes hero-sun-pulse {
+  0%,
+  100% {
+    opacity: 0.82;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+}
+
+/* The arch curve: a true dome, not a pill. */
+.hero-arch {
+  transform-style: preserve-3d;
+}
+
+/* On desktop the arch is sized from the viewport, not from its 4:5 ratio.
+   Left to the ratio, a 592px column produced a 740px-tall frame and pushed the
+   hero to 1016px at 1366x768. This reserves the real budget: viewport minus
+   header, the bottom stats strip and the paddings, clamped so it stays
+   arch-shaped on very tall screens. Below lg the element is left to the 4:5 /
+   16:13 aspect classes and is free to scroll, as the spec allows. */
+@media (min-width: 1024px) {
+  .hero-arch {
+    height: clamp(20rem, calc(100svh - var(--header-height) - 13rem), 42rem);
+  }
+}
+
+/* --- dust motes -------------------------------------------------------- */
+.hero-motes {
+  z-index: 0;
+}
+
+.hero-mote {
+  position: absolute;
+  border-radius: 999px;
+  background: var(--sun-400);
+  opacity: 0;
+  filter: blur(0.4px);
+  box-shadow: 0 0 6px 1px rgba(255, 194, 77, 0.45);
+  animation-name: hero-mote-drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes hero-mote-drift {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+  12% {
+    opacity: 0.5;
+  }
+  88% {
+    opacity: 0.32;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0.6rem, -7rem, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-sun-rays,
+  .hero-sun-glow,
+  .hero-mote {
+    animation: none;
+  }
+  .hero-sun-glow {
+    opacity: 0.9;
+  }
+  .hero-mote {
+    opacity: 0.25;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Custom cursor (fine pointer only)
+   --------------------------------------------------------------------- */
+@media (pointer: fine) {
+  body.has-custom-cursor,
+  body.has-custom-cursor a,
+  body.has-custom-cursor button {
+    cursor: none;
+  }
+  /* Never hide the native cursor inside real inputs */
+  body.has-custom-cursor input,
+  body.has-custom-cursor textarea,
+  body.has-custom-cursor select {
+    cursor: auto;
+  }
+}
+
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 100;
+  border-radius: 9999px;
+  will-change: transform;
+}
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  background: var(--sun-400);
+}
+.cursor-ring {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border: 1px solid rgba(255, 194, 77, 0.7);
+}
+
+/* ---------------------------------------------------------------------
+   Accessibility
+   --------------------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid var(--sun-400);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 200;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  background: var(--sun-400);
+  color: var(--ink-950);
+  font-weight: 600;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Scroll lock while the mobile overlay is open */
+body.scroll-locked {
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* ---------------------------------------------------------------------
+   Loader
+   --------------------------------------------------------------------- */
+.loader-ray {
+  height: 2px;
+  width: 100%;
+  transform-origin: left center;
+  background: linear-gradient(
+    to right,
+    var(--sun-300),
+    var(--sun-500),
+    var(--ember-500)
+  );
+}
+
+/* ---------------------------------------------------------------------
+   Footer heat shimmer
+   --------------------------------------------------------------------- */
+.heat-shimmer {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 5px,
+    rgba(255, 159, 28, 0.05) 6px,
+    transparent 7px
+  );
+  animation: shimmer-drift 7s linear infinite;
+}
+@keyframes shimmer-drift {
+  to {
+    background-position-y: 7px;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Reduced motion: no decorative animation anywhere.
+   Content is simply visible and stacked. GSAP is additionally bypassed
+   in JS via useReducedMotion(), this is the CSS safety net.
+   --------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .sun-rays,
+  .heat-shimmer,
+  .ambient-mesh-bg {
+    animation: none !important;
+  }
+  .sun-orb,
+  .sun-rays {
+    transition: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.2s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.2s !important;
+  }
+}
+

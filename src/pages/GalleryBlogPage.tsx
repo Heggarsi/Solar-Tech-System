@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { PageHero } from '../components/PageHero';
 import { GALLERY_PHOTOS, BLOG_POSTS, SITE_INFO } from '../data/siteData';
 import { BlogPost } from '../types';
-import { HeroSvgPattern } from '../components/HeroSvgPattern';
 
 interface GalleryBlogPageProps {
   onNavigate: (path: string) => void;
@@ -56,82 +56,50 @@ export const GalleryBlogPage: React.FC<GalleryBlogPageProps> = ({ onNavigate, in
   };
 
   return (
-    <div className="w-full relative overflow-hidden">
+    <div className="relative w-full overflow-x-hidden bg-paper">
       {/* PAGE HERO with Aperture / Solar Lens Light & High-Visibility SVG Pattern */}
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-sky-50 via-white to-white border-b border-slate-200/60 overflow-hidden">
-        {/* Soft, delicate Crystalline Photovoltaic SVG Pattern */}
-        <HeroSvgPattern opacity={0.18} />
+      <PageHero
+        chapter="Chapter 05 — Field Notes"
+        crumbs={[
+          { label: 'Home', path: 'solartechsystems.html' },
+          { label: 'Gallery & Blog' },
+        ]}
+        titleLines={['Gallery & Insights']}
+        accent="& Insights"
+        lead="Project photography from Solar Tech Systems installations across Karnataka, paired with technical articles on renewable power engineering."
+        onNavigate={onNavigate}
+      >
+        {/* TAB CONTROLS */}
+        <div className="flex items-center gap-6 border-b border-white/10">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'gallery'}
+            onClick={() => { setActiveTab('gallery'); setSelectedPost(null); }}
+            className={`cursor-pointer border-b-2 pb-3 px-1 text-sm font-semibold transition-all ${
+              activeTab === 'gallery'
+                ? 'border-sun-400 text-sun-300'
+                : 'border-transparent text-dawn-200/50 hover:text-white'
+            }`}
+          >
+            Project Gallery ({GALLERY_PHOTOS.length})
+          </button>
 
-        {/* Dynamic Lens / Solar Flare Ring SVG */}
-        <div className="absolute inset-0 pointer-events-none opacity-35 overflow-hidden" aria-hidden="true">
-          <svg className="absolute -top-12 -right-8 w-[720px] h-[520px]" viewBox="0 0 720 520">
-            <defs>
-              <linearGradient id="lensGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.75" />
-                <stop offset="50%" stopColor="#fb7185" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#ffffff" stopOpacity="0.1" />
-              </linearGradient>
-            </defs>
-            <circle cx="560" cy="140" r="300" fill="none" stroke="url(#lensGrad)" strokeWidth="1.2" strokeDasharray="10 6" />
-            <circle cx="560" cy="140" r="220" fill="none" stroke="rgba(244, 63, 94, 0.25)" strokeWidth="1" strokeDasharray="6 6" />
-            <circle cx="560" cy="140" r="140" fill="none" stroke="rgba(14, 165, 233, 0.3)" strokeWidth="1.5" />
-            <line x1="260" y1="140" x2="860" y2="140" stroke="rgba(56, 189, 248, 0.2)" strokeWidth="1" strokeDasharray="4 6" />
-          </svg>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'blog'}
+            onClick={() => { setActiveTab('blog'); }}
+            className={`cursor-pointer border-b-2 pb-3 px-1 text-sm font-semibold transition-all ${
+              activeTab === 'blog'
+                ? 'border-sun-400 text-sun-300'
+                : 'border-transparent text-dawn-200/50 hover:text-white'
+            }`}
+          >
+            Technical Blog &amp; Articles ({BLOG_POSTS.length})
+          </button>
         </div>
-
-        <div className="max-w-7xl mx-auto space-y-4 relative z-10">
-          <nav className="flex items-center gap-2 text-xs font-medium text-slate-500">
-            <a
-              href="solartechsystems.html"
-              onClick={(e) => { e.preventDefault(); onNavigate('solartechsystems.html'); }}
-              className="hover:text-rose-600 transition-colors"
-            >
-              Home
-            </a>
-            <span>/</span>
-            <span className="text-rose-600">Gallery &amp; Blog</span>
-          </nav>
-
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-            Gallery <span className="text-rose-600">&amp; Insights</span>
-          </h1>
-
-          <p className="text-base sm:text-lg text-slate-600 max-w-3xl leading-relaxed">
-            Project photography from Solar Tech Systems installations across Karnataka, paired with technical articles on renewable power engineering.
-          </p>
-
-          {/* TAB CONTROLS */}
-          <div className="pt-6 flex items-center gap-4 border-b border-slate-200">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'gallery'}
-              onClick={() => { setActiveTab('gallery'); setSelectedPost(null); }}
-              className={`pb-3 px-2 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-                activeTab === 'gallery'
-                  ? 'border-rose-600 text-rose-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              Project Gallery ({GALLERY_PHOTOS.length})
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'blog'}
-              onClick={() => { setActiveTab('blog'); }}
-              className={`pb-3 px-2 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-                activeTab === 'blog'
-                  ? 'border-rose-600 text-rose-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-900'
-              }`}
-            >
-              Technical Blog &amp; Articles ({BLOG_POSTS.length})
-            </button>
-          </div>
-        </div>
-      </section>
+      </PageHero>
 
       {/* TAB PANEL: GALLERY */}
       {activeTab === 'gallery' && (

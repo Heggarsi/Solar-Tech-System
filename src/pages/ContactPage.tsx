@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { PageHero } from '../components/PageHero';
 import { SITE_INFO } from '../data/siteData';
-import { HeroSvgPattern } from '../components/HeroSvgPattern';
 
 interface ContactPageProps {
   onNavigate: (path: string) => void;
@@ -36,55 +36,19 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="w-full relative overflow-hidden">
+    <div className="relative w-full overflow-x-hidden bg-paper">
       {/* PAGE HERO with Regional Grid Node & High-Visibility SVG Pattern */}
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-sky-50 via-white to-white border-b border-slate-200/60 overflow-hidden">
-        {/* Soft, delicate Crystalline Photovoltaic SVG Pattern */}
-        <HeroSvgPattern opacity={0.18} />
-
-        {/* Interconnected Grid Node SVG Background */}
-        <div className="absolute inset-0 pointer-events-none opacity-30 overflow-hidden" aria-hidden="true">
-          <svg className="absolute -top-12 -right-12 w-[780px] h-[540px]" viewBox="0 0 780 540">
-            <defs>
-              <linearGradient id="contactNodeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.8" />
-                <stop offset="70%" stopColor="#fb7185" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.1" />
-              </linearGradient>
-            </defs>
-            <path d="M 120 420 L 320 220 L 520 340 L 720 160" fill="none" stroke="url(#contactNodeGrad)" strokeWidth="2" strokeDasharray="6 6" />
-            <path d="M 220 480 L 420 300 L 620 440" fill="none" stroke="rgba(244, 63, 94, 0.25)" strokeWidth="1.2" strokeDasharray="8 8" />
-            
-            {/* Grid Nodes */}
-            <circle cx="320" cy="220" r="5" fill="#38bdf8" />
-            <circle cx="520" cy="340" r="6" fill="#fb7185" />
-            <circle cx="720" cy="160" r="4.5" fill="#0284c7" />
-            <circle cx="420" cy="300" r="4" fill="#f43f5e" />
-          </svg>
-        </div>
-
-        <div className="max-w-7xl mx-auto space-y-4 relative z-10">
-          <nav className="flex items-center gap-2 text-xs font-medium text-slate-500">
-            <a
-              href="solartechsystems.html"
-              onClick={(e) => { e.preventDefault(); onNavigate('solartechsystems.html'); }}
-              className="hover:text-rose-600 transition-colors"
-            >
-              Home
-            </a>
-            <span>/</span>
-            <span className="text-rose-600">Contact Us</span>
-          </nav>
-
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-            Get In Touch <span className="text-rose-600">With Us</span>
-          </h1>
-
-          <p className="text-base sm:text-lg text-slate-600 max-w-3xl leading-relaxed">
-            Reach out to us through the enquiry form or contact details provided below. We are here to assist with any questions or provide more information about our products and services.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        chapter="Chapter 07 — Dusk"
+        crumbs={[
+          { label: 'Home', path: 'solartechsystems.html' },
+          { label: 'Contact Us' },
+        ]}
+        titleLines={['Get In Touch With Us']}
+        accent="With Us"
+        lead="Reach out to us through the enquiry form or contact details provided below. We are here to assist with any questions or provide more information about our products and services."
+        onNavigate={onNavigate}
+      />
 
       {/* CONTACT INFO & FORM SECTION */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 relative">

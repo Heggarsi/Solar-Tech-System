@@ -1,6 +1,6 @@
 import React from 'react';
+import { PageHero } from '../components/PageHero';
 import { TESTIMONIALS, SITE_INFO } from '../data/siteData';
-import { HeroSvgPattern } from '../components/HeroSvgPattern';
 
 interface ClientsPageProps {
   onNavigate: (path: string) => void;
@@ -31,44 +31,19 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ onNavigate }) => {
   ];
 
   return (
-    <div className="w-full relative overflow-hidden">
+    <div className="relative w-full overflow-x-hidden bg-paper">
       {/* PAGE HERO with Concentric Solar Arcs & High-Visibility SVG Pattern */}
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-sky-50 via-white to-white border-b border-slate-200/60 overflow-hidden">
-        {/* Soft, delicate Crystalline Photovoltaic SVG Pattern */}
-        <HeroSvgPattern opacity={0.18} />
-
-        {/* Concentric Solar Ripple SVG */}
-        <div className="absolute inset-0 pointer-events-none opacity-30 overflow-hidden" aria-hidden="true">
-          <svg className="absolute -top-16 -right-16 w-[750px] h-[550px]" viewBox="0 0 750 550">
-            <circle cx="600" cy="150" r="380" fill="none" stroke="#38bdf8" strokeWidth="1" strokeDasharray="12 8" />
-            <circle cx="600" cy="150" r="280" fill="none" stroke="#fb7185" strokeWidth="1.2" strokeDasharray="8 6" />
-            <circle cx="600" cy="150" r="180" fill="none" stroke="#0ea5e9" strokeWidth="1.5" />
-            <circle cx="600" cy="150" r="90" fill="none" stroke="#f43f5e" strokeWidth="0.8" strokeDasharray="4 4" />
-          </svg>
-        </div>
-
-        <div className="max-w-7xl mx-auto space-y-4 relative z-10">
-          <nav className="flex items-center gap-2 text-xs font-medium text-slate-500">
-            <a
-              href="solartechsystems.html"
-              onClick={(e) => { e.preventDefault(); onNavigate('solartechsystems.html'); }}
-              className="hover:text-rose-600 transition-colors"
-            >
-              Home
-            </a>
-            <span>/</span>
-            <span className="text-rose-600">Our Clients</span>
-          </nav>
-
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-            Our <span className="text-rose-600">Clients</span>
-          </h1>
-
-          <p className="text-base sm:text-lg text-slate-600 max-w-3xl leading-relaxed">
-            Solar Tech Systems delivers reliable solar solutions, earning the trust and satisfaction of clients across commercial, industrial, and agricultural sectors.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        chapter="Chapter 04 — The People"
+        crumbs={[
+          { label: 'Home', path: 'solartechsystems.html' },
+          { label: 'Our Clients' },
+        ]}
+        titleLines={['Our Clients']}
+        accent="Clients"
+        lead="Solar Tech Systems delivers reliable solar solutions, earning the trust and satisfaction of clients across commercial, industrial, and agricultural sectors."
+        onNavigate={onNavigate}
+      />
 
       {/* SECTOR COVERAGE */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 relative">

@@ -3,19 +3,79 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Solar Tech Systems | Clean Energy, Rooftop Solar &amp; Power Infrastructure</title>
-    <meta name="description" content="Renewable solar energy solutions, commercial rooftops, 33 kV transmission lines, and substation USS commissioning across Karnataka." />
-    <meta property="og:title" content="Solar Tech Systems | Clean Energy &amp; Power Infrastructure" />
-    <meta property="og:description" content="Renewable solar energy solutions, commercial rooftops, 33 kV transmission lines, and substation USS commissioning across Karnataka." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#050B14" />
+
+    <!--
+      Deep links resolve to the SPA shell on hosts that rewrite unknown paths
+      to index.html (Netlify _redirects, Vercel rewrites, Cloudflare Pages).
+      The per-page <title> and description are set by useDocumentMeta on
+      navigation, so this is only the first-paint default.
+    -->
+    <title>Solar Tech Systems â€” Solar EPC &amp; Power Infrastructure in Karnataka</title>
+    <meta
+      name="description"
+      content="Solar Tech Systems is a solar EPC and power infrastructure company in Bangalore, Karnataka, delivering rooftop solar, solar power plants, 33 kV transmission lines and 33/11 kV substations since 2016."
+    />
+    <link rel="canonical" href="https://solartechsystems.co.in/" />
+
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Solar Tech Systems" />
+    <meta property="og:title" content="Solar Tech Systems â€” Solar EPC &amp; Power Infrastructure" />
+    <meta
+      property="og:description"
+      content="Rooftop solar, solar power plants, 33 kV transmission lines and 33/11 kV substations across Karnataka."
+    />
+    <meta property="og:url" content="https://solartechsystems.co.in/" />
+    <meta property="og:image" content="/images/about-solar.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <meta name="twitter:title" content="Solar Tech Systems â€” Solar EPC &amp; Power Infrastructure" />
+    <meta
+      name="twitter:description"
+      content="Rooftop solar, solar power plants, 33 kV transmission lines and 33/11 kV substations across Karnataka."
+    />
+    <meta name="twitter:image" content="/images/about-solar.jpg" />
+
+    <!--
+      Above-the-fold imagery. The hero scene is WebGL, but the About image and
+      the service cards are still real <img> tags, so this warms the cache.
+    -->
+    <link rel="preload" as="image" href="/images/about-solar.jpg" fetchpriority="high" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Solar Tech Systems",
+        "description": "Solar EPC and power infrastructure company delivering rooftop solar, solar power plants, 33 kV transmission lines and 33/11 kV substations across Karnataka.",
+        "url": "https://solartechsystems.co.in/",
+        "logo": "https://solartechsystems.co.in/images/logo.png",
+        "image": "https://solartechsystems.co.in/images/about-solar.jpg",
+        "telephone": "+91-77607-77162",
+        "email": "Info@solartechsystems.co.in",
+        "foundingDate": "2016",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Bangalore",
+          "addressRegion": "Karnataka",
+          "addressCountry": "IN"
+        },
+        "areaServed": {
+          "@type": "State",
+          "name": "Karnataka"
+        }
+      }
+    </script>
   </head>
-  <body class="bg-canvas text-slate-800 antialiased selection:bg-rose-100 selection:text-rose-900">
+  <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

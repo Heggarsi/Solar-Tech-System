@@ -1,7 +1,7 @@
 import React from 'react';
+import { PageHero } from '../components/PageHero';
 import { SERVICES, WHY_CHOOSE_ITEMS, SITE_INFO } from '../data/siteData';
 import { ServiceItem } from '../types';
-import { HeroSvgPattern } from '../components/HeroSvgPattern';
 
 interface ServicePageProps {
   service: ServiceItem;
@@ -12,54 +12,19 @@ export const ServicePage: React.FC<ServicePageProps> = ({ service, onNavigate })
   const otherServices = SERVICES.filter(s => s.slug !== service.slug);
 
   return (
-    <div className="w-full relative overflow-hidden">
+    <div className="relative w-full overflow-x-hidden bg-paper">
       {/* SERVICE PAGE HERO with High-Visibility SVG Pattern & Vectors */}
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-sky-50 via-white to-white border-b border-slate-200/60 overflow-hidden">
-        {/* Soft, delicate Crystalline Photovoltaic SVG Pattern */}
-        <HeroSvgPattern opacity={0.18} />
-
-        {/* Dynamic Transmission / Solar Voltage Wave SVG */}
-        <div className="absolute inset-0 pointer-events-none opacity-30 overflow-hidden" aria-hidden="true">
-          <svg className="absolute -top-12 -right-8 w-[800px] h-[550px]" viewBox="0 0 800 550">
-            <defs>
-              <linearGradient id="serviceHeroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.8" />
-                <stop offset="60%" stopColor="#fb7185" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            {/* Electrical / Solar Sine Waves */}
-            <path d="M 0 350 Q 200 150 400 350 T 800 350" fill="none" stroke="url(#serviceHeroGrad)" strokeWidth="2" strokeDasharray="10 8" />
-            <path d="M 0 380 Q 200 200 400 380 T 800 380" fill="none" stroke="rgba(244, 63, 94, 0.25)" strokeWidth="1.5" strokeDasharray="8 6" />
-            <circle cx="650" cy="200" r="160" fill="none" stroke="rgba(14, 165, 233, 0.2)" strokeWidth="1" strokeDasharray="4 8" />
-            <circle cx="650" cy="200" r="230" fill="none" stroke="rgba(251, 113, 133, 0.15)" strokeWidth="1" />
-          </svg>
-        </div>
-
-        <div className="max-w-7xl mx-auto space-y-4 relative z-10">
-          <nav className="flex items-center gap-2 text-xs font-medium text-slate-500">
-            <a
-              href="solartechsystems.html"
-              onClick={(e) => { e.preventDefault(); onNavigate('solartechsystems.html'); }}
-              className="hover:text-rose-600 transition-colors"
-            >
-              Home
-            </a>
-            <span>/</span>
-            <span>Products / Services</span>
-            <span>/</span>
-            <span className="text-rose-600">{service.title}</span>
-          </nav>
-
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-            {service.title}
-          </h1>
-
-          <p className="text-base sm:text-lg text-slate-600 max-w-3xl leading-relaxed">
-            {service.desc}
-          </p>
-        </div>
-      </section>
+      <PageHero
+        chapter="Chapter 03 — Capabilities"
+        crumbs={[
+          { label: 'Home', path: 'solartechsystems.html' },
+          { label: 'Products / Services' },
+          { label: service.title },
+        ]}
+        titleLines={[service.title]}
+        lead={service.desc}
+        onNavigate={onNavigate}
+      />
 
       {/* OVERVIEW & HIGHLIGHTS */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 relative">

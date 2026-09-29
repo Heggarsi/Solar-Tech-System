@@ -1,173 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import { Navbar } from './components/Navbar';
-import { Footer } from './components/Footer';
-import { ScrollSun } from './components/ScrollSun';
-import { ScrollProgressBar } from './components/ScrollProgressBar';
-import { BackToTop } from './components/BackToTop';
-import { AttractiveBackground } from './components/AttractiveBackground';
-
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Layout } from './components/Layout';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ServicePage } from './pages/ServicePage';
 import { ClientsPage } from './pages/ClientsPage';
 import { GalleryBlogPage } from './pages/GalleryBlogPage';
 import { ContactPage } from './pages/ContactPage';
+import { SERVICES, ROUTES } from './content/site';
+import { useSiteNav } from './hooks/useSiteNav';
 
-import { SERVICES } from './data/siteData';
+/*
+ * The existing pages all take the same `onNavigate(path)` callback and address
+ * each other by their shipped filename. These thin adapters keep that contract
+ * intact so none of the page content had to be rewritten just to introduce a
+ * real router.
+ */
+const withNav =
+  <P extends { onNavigate: (path: string) => void }>(
+    Component: React.FC<P>,
+  ): React.FC<Partial<P>> => {
+    const Adapter: React.FC<Partial<P>> = (props) => {
+      const navigate = useSiteNav();
+      return <Component {...(props as P)} onNavigate={navigate} />;
+    };
+    return Adapter;
+  };
+
+const Home = withNav(HomePage);
+const About = withNav(AboutPage);
+const Clients = withNav(ClientsPage);
+const GalleryBlog = withNav(GalleryBlogPage);
+const Contact = withNav(ContactPage);
+
+const ServiceRoute: React.FC<{ slug: string }> = ({ slug }) => {
+  const navigate = useSiteNav();
+  const service = SERVICES.find((s) => s.slug === slug);
+  if (!service) return <Navigate to={`/${ROUTES.home}`} replace />;
+  return <ServicePage service={service} onNavigate={navigate} />;
+};
 
 export default function App() {
-  // Normalize current path from window.location
-  const getInitialPath = () => {
-    if (typeof window === 'undefined') return 'solartechsystems.html';
-    const path = window.location.pathname.replace(/^\//, '');
-    if (!path || path === '' || path === 'index.html') return 'solartechsystems.html';
-    return path;
-  };
-
-  const [currentPath, setCurrentPath] = useState<string>(getInitialPath);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [showBackToTop, setShowBackToTop] = useState(false);
-
-  // Raw Black Theme State
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('solartech_theme');
-      if (stored === 'dark' || stored === 'light') return stored;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    return 'light';
-  });
-
-  // Apply dark theme class to document root
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      localStorage.setItem('solartech_theme', 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('solartech_theme', 'light');
-    }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
-  };
-
-  // Synchronize with browser history (back/forward buttons)
-  useEffect(() => {
-    const handlePopState = () => {
-      const p = window.location.pathname.replace(/^\//, '') || 'solartechsystems.html';
-      setCurrentPath(p);
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  // Scroll tracking for Sun, Progress Bar, and Navbar
-  useEffect(() => {
-    const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const currentScroll = window.scrollY;
-      
-      const progress = totalHeight > 0 ? Math.min(Math.max(currentScroll / totalHeight, 0), 1) : 0;
-      setScrollProgress(progress);
-      setIsScrolled(currentScroll > 30);
-      setShowBackToTop(currentScroll > 400);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [currentPath]);
-
-  // Navigate function with URL updates
-  const handleNavigate = (path: string) => {
-    // If it is an anchor link on home
-    if (path.startsWith('#') || path.includes('#')) {
-      const parts = path.split('#');
-      const targetPage = parts[0] || 'solartechsystems.html';
-      const targetId = parts[1];
-
-      if (currentPath !== targetPage && (currentPath !== 'solartechsystems.html' || targetPage !== '')) {
-        setCurrentPath(targetPage);
-        window.history.pushState(null, '', `/${targetPage}`);
-      }
-      setTimeout(() => {
-        const el = document.getElementById(targetId);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 50);
-      return;
-    }
-
-    setCurrentPath(path);
-    window.history.pushState(null, '', `/${path}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Resolve matching page view
-  const renderCurrentPage = () => {
-    // Check services
-    const matchedService = SERVICES.find(s => currentPath.includes(s.file) || currentPath.includes(s.slug));
-    if (matchedService) {
-      return <ServicePage service={matchedService} onNavigate={handleNavigate} />;
-    }
-
-    if (currentPath.includes('about-us')) {
-      return <AboutPage onNavigate={handleNavigate} />;
-    }
-
-    if (currentPath.includes('our-clients')) {
-      return <ClientsPage onNavigate={handleNavigate} />;
-    }
-
-    if (currentPath.includes('gallery-blog')) {
-      return <GalleryBlogPage onNavigate={handleNavigate} />;
-    }
-
-    if (currentPath.includes('contact-us')) {
-      return <ContactPage onNavigate={handleNavigate} />;
-    }
-
-    // Default to Home
-    return <HomePage onNavigate={handleNavigate} />;
-  };
-
   return (
-    <div className="relative min-h-screen flex flex-col font-sans selection:bg-rose-100 selection:text-rose-900 bg-canvas">
-      {/* Continuous ambient moving gradient background mesh */}
-      <div className="ambient-mesh-bg" aria-hidden="true" />
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Navigate to={`/${ROUTES.home}`} replace />} />
+          <Route path={`/${ROUTES.home}`} element={<Home />} />
+          <Route path={`/${ROUTES.about}`} element={<About />} />
+          <Route path={`/${ROUTES.clients}`} element={<Clients />} />
+          <Route path={`/${ROUTES.galleryBlog}`} element={<GalleryBlog />} />
+          <Route path={`/${ROUTES.contact}`} element={<Contact />} />
 
-      {/* Attractive Multilayered SVG Animations (Waves, Solar Orbitals, Grid, Particles) */}
-      <AttractiveBackground scrollProgress={scrollProgress} />
+          {SERVICES.map((s) => (
+            <Route
+              key={s.slug}
+              path={`/${s.file}`}
+              element={<ServiceRoute slug={s.slug} />}
+            />
+          ))}
 
-      {/* Top Scroll Progress Bar */}
-      <ScrollProgressBar progress={scrollProgress} />
+          {/* Deep links without the .html suffix still resolve. */}
+          <Route path="/index.html" element={<Navigate to={`/${ROUTES.home}`} replace />} />
 
-      {/* Scroll-Linked Travelling Sun Animation */}
-      <ScrollSun scrollProgress={scrollProgress} />
-
-      {/* Navigation */}
-      <Navbar
-        currentPath={currentPath}
-        onNavigate={handleNavigate}
-        isScrolled={isScrolled}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-      />
-
-      {/* Main Page Content - Hero section begins directly beneath top gradient bar with 0 gap */}
-      <main id="main" className="flex-1 w-full relative z-10">
-        {renderCurrentPage()}
-      </main>
-
-      {/* Footer */}
-      <Footer onNavigate={handleNavigate} />
-
-      {/* Floating Back to Top Button */}
-      <BackToTop show={showBackToTop} />
-    </div>
+          <Route
+            path="*"
+            element={<Navigate to={`/${ROUTES.home}`} replace />}
+          />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }

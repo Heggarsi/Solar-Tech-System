@@ -1,0 +1,46 @@
+================================================================================
+DATA FLOW: ONE NAVIGATION, END TO END
+================================================================================
+
+    user clicks "Our Clients" in the Navbar
+      |
+      1. <a href="our-clients.html"> with onClick -> e.preventDefault()
+      2. useSiteNav().navigate('/our-clients.html')
+      3. React Router matches Route, swaps the Outlet subtree
+      |     - ClientsPage mounts, its own contexts register
+      |     - previous page unmounts, its contexts revert  <-- no leaks
+      |     - Navbar, SunLayer, Lenis, PageTransition all UNTOUCHED
+      4. Layout: useDocumentMeta writes <title> + description from ROUTE_META
+      5. Layout: rAF -> ScrollTrigger.refresh() against the new DOM
+      6. PageTransition plays the sheet wipe
+      7. Lenis is already at scroll 0, so the new page starts at the top
+         without a second scroll reset fighting the transition
+
+Nothing in steps 1-7 tears down a global system. That is the whole point of the
+mounting arrangement in section 2.
+
+
+================================================================================
+KNOWN SEAMS / WHERE FUTURE WORK ATTACHES
+================================================================================
+
+Inner-page bodies. The five inner pages now use the shared <PageHero />, but the
+sections below it are still the original light-themed markup. They are correct
+and readable, but they have not been given Reveal / ImageReveal treatment, and
+they have not been reconciled with the dark palette. The integration point is
+simply: the primitives accept the same className + children contract, so
+adopting them section by section needs no architectural change.
+
+Enquiry form. Still local React state, as it shipped. There is no backend, so
+there is nothing to integrate yet. When a destination is confirmed it needs a
+submit handler on <form onSubmit> - the form markup is already built for it.
+
+Deleted-but-present legacy components. AttractiveBackground, ScrollSun,
+ScrollProgressBar and BackToTop are no longer imported. They can be deleted
+without touching anything; SunLayer and ScrollProgress replaced them, and
+leaving them would risk a future contributor mounting a second sun.
+
+Static hosting. _redirects covers Netlify and Cloudflare Pages. Vercel needs a
+vercel.json rewrite and GitHub Pages needs a 404.html redirect trick instead.
+The SPA is built for a static host, so this is a deploy-config concern, not an
+application one.
