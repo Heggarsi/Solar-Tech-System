@@ -1,7 +1,7 @@
 import React, { useRef, type ReactNode } from 'react';
 import { InlineCounter } from '../motion/AnimatedCounter';
 import { useGsapContext } from '../../hooks/useGsapContext';
-import { useHeaderHeight, useHeroFx, useMagneticCap, followPointer, MOTES } from './heroUtils';
+import { useHeaderHeight, useHeroFx, useMagneticCap, followPointer } from './heroUtils';
 import { gsap } from '../../lib/motion/gsap';
 
 interface HeroCtaProps {
@@ -50,8 +50,7 @@ interface SunriseHeroProps {
  * HERO — "Sunrise over the array".
  *
  * Split layout: message on the left, one real project photograph in an arch
- * frame on the right with the sun rising behind it, stats anchored to a strip
- * along the bottom.
+ * frame on the right, stats anchored to a strip along the bottom.
  *
  * Everything decorative here is aria-hidden and pointer-events-none. All motion
  * is transform/opacity/clip-path only, lives in one gsap.context() via
@@ -61,66 +60,6 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
   const rootRef = useRef<HTMLElement>(null);
   const { reduced, canScrub, canHover } = useHeroFx();
   useHeaderHeight();
-
-  // Hand the global CSS sun off while the hero is on screen, then give it
-  // back. The hero has its own localized sun, so two would otherwise show.
-  useGsapContext(
-    () => {
-      const root = rootRef.current;
-      if (!root) return;
-
-      const setHidden = (hidden: boolean) => {
-        if (hidden) document.documentElement.setAttribute('data-hero-sun', 'local');
-        else document.documentElement.removeAttribute('data-hero-sun');
-      };
-
-      setHidden(true);
-
-      const io = new IntersectionObserver(([entry]) => setHidden(entry.isIntersecting), {
-        rootMargin: '0px 0px -10% 0px',
-      });
-      io.observe(root);
-
-      // Park the sun on the arch's horizontal centre, its top edge level with
-      // the arch's top edge. Hard-coded percentages drift as the copy column
-      // changes height, so the sun would slide off the photograph.
-      const arch = root.querySelector<HTMLElement>('[data-arch]');
-      const field = root.querySelector<HTMLElement>('[data-sun]');
-      if (arch && field) {
-        const place = () => {
-          const heroBox = root.getBoundingClientRect();
-          const archBox = arch.getBoundingClientRect();
-          if (heroBox.width < 1) return;
-          const x = ((archBox.left + archBox.width / 2 - heroBox.left) / heroBox.width) * 100;
-          const y = archBox.top - heroBox.top;
-          root.style.setProperty('--hero-sun-x', `${x.toFixed(2)}%`);
-          root.style.setProperty('--hero-sun-y', `${Math.round(y)}px`);
-        };
-        place();
-        const ro = new ResizeObserver(place);
-        ro.observe(arch);
-        ro.observe(root);
-        window.addEventListener('resize', place);
-        // The arch settles from scale 1.15 -> 1 after the load timeline; re-place
-        // once that has finished so the sun ends up truly centred.
-        const t = window.setTimeout(place, 1800);
-        return () => {
-          io.disconnect();
-          setHidden(false);
-          ro.disconnect();
-          window.removeEventListener('resize', place);
-          window.clearTimeout(t);
-        };
-      }
-
-      return () => {
-        io.disconnect();
-        setHidden(false);
-      };
-    },
-    { dependencies: [] },
-    rootRef,
-  );
 
   useGsapContext(
     () => {
@@ -143,35 +82,28 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
       // ---- Load timeline, ~1.4s total, played once. ---------------------
       const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
 
-      // 1. Sun fades and scales in from nothing.
+      // 1. Eyebrow.
       tl.fromTo(
-        q('[data-sun]'),
-        { opacity: 0, scale: 0.72 },
-        { opacity: 1, scale: 1, duration: 0.9, ease: 'expo.out' },
-        0,
+        q('[data-eyebrow]'),
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
+        0.1,
       )
-        // 2. Eyebrow.
-        .fromTo(
-          q('[data-eyebrow]'),
-          { opacity: 0, y: 14 },
-          { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
-          0.1,
-        )
-        // 3. Headline, one mask per line, no per-character splitting.
+        // 2. Headline, one mask per line, no per-character splitting.
         .fromTo(
           q('[data-line-inner]'),
           { yPercent: 100 },
           { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.1 },
           0.2,
         )
-        // 4. Paragraph + CTAs + trust line.
+        // 3. Paragraph + CTAs + trust line.
         .fromTo(
           q('[data-copy]'),
           { opacity: 0, y: 24 },
           { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', stagger: 0.08 },
           0.6,
         )
-        // 5. Arch: clip from the bottom up while the photo settles from 1.15.
+        // 4. Arch: clip from the bottom up while the photo settles from 1.15.
         .fromTo(
           q('[data-arch-clip]'),
           { clipPath: 'inset(100% 0% 0% 0%)' },
@@ -184,14 +116,14 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
           { scale: 1, duration: 1.2, ease: 'power3.out' },
           0.3,
         )
-        // 6. Floating cards.
+        // 5. Floating cards.
         .fromTo(
           q('[data-float-card]'),
           { opacity: 0, scale: 0.9 },
           { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.7)' },
           1,
         )
-        // 7. Stats strip, then the counters count up via InlineCounter.
+        // 6. Stats strip, then the counters count up via InlineCounter.
         .fromTo(
           q('[data-stats]'),
           { opacity: 0, y: 20 },
@@ -239,12 +171,6 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
           0,
         )
           .fromTo(
-            q('[data-sun]'),
-            { yPercent: 0, scale: 1, filter: 'brightness(1)' },
-            { yPercent: -14, scale: 1.16, filter: 'brightness(1.22)', ease: 'none', duration: 1 },
-            0,
-          )
-          .fromTo(
             q('[data-hero-copy]'),
             { y: 0, opacity: 1 },
             { y: -30, opacity: 0.35, ease: 'none', duration: 1 },
@@ -257,7 +183,6 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
       // ---- Pointer interactions, fine pointer only. ---------------------
       if (canHover) {
         const arch = root.querySelector<HTMLElement>('[data-arch]');
-        const sun = root.querySelector<HTMLElement>('[data-sun]');
 
         const stopArch = followPointer(arch!, {
           max: 40,
@@ -267,17 +192,9 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
             gsap.to(arch, { rotateY: (dx / 40) * 3, rotateX: (-dy / 40) * 3, duration: 0.5, ease: 'power2.out' });
           },
         });
-        const stopSun = followPointer(root, {
-          max: 10,
-          enabled: true,
-          onMove: (dx, dy) => {
-            gsap.to(sun, { x: dx, y: dy, duration: 0.8, ease: 'power2.out' });
-          },
-        });
 
         return () => {
           stopArch();
-          stopSun();
         };
       }
     },
@@ -295,51 +212,8 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
       {/* ---------- background: navy gradient + blueprint, edge-masked ---- */}
       <div className="hero-bg pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
       <div className="hero-grid pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
-      {/* Warm radial bloom sitting behind the arch, where the sun will be. */}
+      {/* Warm radial bloom behind the arch, lighting the photograph's top edge. */}
       <div className="hero-bloom pointer-events-none absolute -z-10" aria-hidden="true" />
-
-      {/* ---------- sun ------------------------------------------------
-          The field starts exactly at the header's bottom edge and is
-          overflow-hidden, so no part of the sun can ever render behind the
-          navbar. The mask eases it in over the first 3rem, which reads as the
-          sun cresting the arch rather than being sliced off. --hero-sun-x /
-          --hero-sun-y are measured from the arch so it stays welded to the
-          photograph. They are namespaced because the global SunLayer publishes
-          its own --sun-x / --sun-y on :root and custom properties inherit. */}
-      <div className="hero-sun-field" aria-hidden="true">
-        <div data-sun className="hero-sun">
-          {/* Pulsing glow */}
-          <div className="hero-sun-glow" />
-          {/* Rotating thin rays, 60s per turn */}
-          <svg
-            className="hero-sun-rays"
-            viewBox="0 0 200 200"
-            fill="none"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <g stroke="url(#heroRayFade)" strokeWidth="1.1">
-              {Array.from({ length: 24 }).map((_, i) => (
-                <line
-                  key={i}
-                  x1="100"
-                  y1="16"
-                  x2="100"
-                  y2={i % 2 === 0 ? 40 : 31}
-                  transform={`rotate(${(360 / 24) * i} 100 100)`}
-                />
-              ))}
-            </g>
-            <defs>
-              <linearGradient id="heroRayFade" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#FFC24D" stopOpacity="0.55" />
-                <stop offset="100%" stopColor="#FF6B35" stopOpacity="0.2" />
-              </linearGradient>
-            </defs>
-          </svg>
-          {/* The disc itself */}
-          <div className="hero-sun-disc" />
-        </div>
-      </div>
 
       {/* ---------- content --------------------------------------------- */}
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-5 sm:px-6 lg:px-8">
@@ -440,38 +314,13 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
 
           {/* RIGHT: the photograph in an arch frame, cols 7-12 */}
           <div className="relative flex w-full justify-center lg:col-span-6">
-            {/* Dust: 40 CSS motes, absolutely positioned inside this
-                column only, so nothing can ever drift over the headline or
-                behind the header. No canvas, no Three.js, no extra bundle. */}
-            {canHover && (
-              <div
-                className="hero-motes pointer-events-none absolute inset-0 overflow-hidden"
-                aria-hidden="true"
-              >
-                {MOTES.map((mote, i) => (
-                  <span
-                    key={i}
-                    className="hero-mote"
-                    style={{
-                      left: `${mote.x}%`,
-                      top: `${mote.y}%`,
-                      width: mote.size,
-                      height: mote.size,
-                      animationDelay: `${mote.delay}s`,
-                      animationDuration: `${mote.duration}s`,
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-
             <div
               data-arch
               className="hero-arch relative w-full max-w-[26rem] lg:max-w-none"
               style={{ perspective: '1000px' }}
             >
-              {/* Sun is behind this frame; the frame's own arch radius keeps
-                  the sun peeking above the curve. */}
+              {/* The arch's own border picks up the warm edge of the photo
+                  below it; the frame no longer has a sun behind it. */}
               <div
                 data-arch-clip
                 className="relative h-full w-full overflow-hidden rounded-t-[999px] rounded-b-2xl border border-sun-400/25 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.85)]"

@@ -62,7 +62,7 @@ export const useHeroFx = () => {
     reduced,
     /** Desktop-only scroll choreography. */
     canScrub: !reduced && isDesktop,
-    /** Desktop-only pointer interactions (tilt, magnetic, sun follow). */
+    /** Desktop-only pointer interactions (tilt, magnetic). */
     canHover: !reduced && isDesktop && fine,
   };
 };
@@ -128,21 +128,3 @@ export const useMagneticCap = (ref: React.RefObject<HTMLElement | null>, max = 8
 
   return enabled;
 };
-
-/**
- * 40 warm dust motes, positioned deterministically inside the hero's visual
- * column. Values come from a fixed linear congruential sequence rather than
- * Math.random() so server and client render byte-identical markup.
- */
-export const MOTES = Array.from({ length: 40 }, (_, i) => {
-  const a = (i * 9301 + 49297) % 233280;
-  const b = (i * 4801 + 12983) % 233280;
-  const c = (i * 7919 + 104729) % 233280;
-  return {
-    x: (a / 233280) * 100,
-    y: (b / 233280) * 100,
-    size: 2 + (c / 233280) * 3,
-    delay: -((a + b) / 233280) * 24,
-    duration: 14 + (c / 233280) * 16,
-  };
-});

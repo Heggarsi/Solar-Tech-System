@@ -1,4 +1,262 @@
 ================================================================================
+LIBRARY INVENTORY: WHAT IS INSTALLED, WHAT IS ACTUALLY USED, AND WHERE
+================================================================================
+
+This section is a map of every third-party package in package.json, what it
+actually does in this app, and the exact files that import it. The central
+rule the codebase follows: GSAP, Lenis, ScrollTrigger and the design tokens
+are NEVER imported from node_modules directly by a component. Everything goes
+through src/lib/motion/, which registers plugins exactly once and owns the
+single Lenis instance.
+
+--------------------------------------------------------------------------------
+1. RUNTIME LIBRARIES ACTUALLY IMPORTED BY APPLICATION CODE
+--------------------------------------------------------------------------------
+
+react 19.3.0  (npm: react / react-dom)
+  WHAT:      The component model. Everything renders through it.
+  WHERE:     46 of the 46 .ts/.tsx files in src/ import from 'react'.
+  ENTRY:     src/main.tsx            -> createRoot + StrictMode
+             src/App.tsx             -> <BrowserRouter>, the route table, and
+                                          the withNav() adapter that keeps every
+                                          page's onNavigate(path) contract
+  ONLY USE:  react-dom/client is imported in exactly one file, src/main.tsx.
+
+react-router-dom 7.18.4
+  WHAT:      Client-side routing for the SPA. The shipped .html URLs are real
+             client-side routes, so BrowserRouter is the whole site.
+  WHERE:     5 files
+             src/App.tsx                    -> BrowserRouter, Routes, Route,
+                                                 Navigate; one <Route element=
+                                                 {<Layout/>}> wraps every page so
+                                                 the chrome mounts once
+             src/components/Layout.tsx     -> Outlet, useLocation
+             src/components/Navbar.tsx     -> useLocation (active-link state)
+             src/components/motion/PageTransition.tsx
+                                            -> useLocation; the sheet wipe is
+                                               keyed to location.pathname
+             src/hooks/useSiteNav.ts        -> useNavigate, useLocation; the
+                                               adapter that turns "about-us.html"
+                                               into a router path and handles
+                                               "#anchor" scrolling through Lenis
+  NOTE:      Route paths come from ROUTES in src/content/site.ts. There is no
+             react-helmet; per-route SEO is src/hooks/useDocumentMeta.ts.
+
+gsap 3.15.0
+  WHAT:      The animation engine. Tames, fromTo, set, timeline, context,
+             ticker, utils.selector, and the CorePlugin type surface.
+  WHERE:     Registered and re-exported in exactly one place:
+               src/lib/motion/gsap.ts      -> the ONLY `import { gsap } from
+                                               'gsap'` in the app
+             Consumed through that module by 21 files:
+               src/lib/motion/gsap.ts, lenis.ts
+               src/hooks/useGsapContext.ts
+               src/components/Layout.tsx, Navbar.tsx, SunLayer.tsx
+               src/components/hero/SunriseHero.tsx
+               src/components/svg/EnergyFlow.tsx
+               src/components/3d/SolarScene.tsx
+               src/components/motion/  -> AnimatedCounter, CustomCursor,
+                                          HorizontalScroll, ImageReveal,
+                                          PageTransition, Parallax,
+                                          PinnedSection, RaysLoader, Reveal,
+                                          RevealText, ScrollProgress,
+                                          SectionIndicator
+  API USED:  gsap.set (18), gsap.to (17), gsap.ticker (8), gsap.timeline (7),
+             gsap.fromTo (7), gsap.context (4), gsap.utils.selector (2),
+             gsap.TweenVars / gsap.core (types only)
+
+gsap/ScrollTrigger
+  WHAT:      Binds animation timelines to scroll position and recomputes
+             trigger start/end on refresh. This is what makes the whole site
+             scrub correctly after a route change.
+  WHERE:     Imported ONLY in src/lib/motion/gsap.ts, registered once, and
+             re-exported. Direct consumers:
+               src/components/Layout.tsx        -> ScrollTrigger.refresh() on
+                                                     load, fonts.ready, popstate
+                                                     and on the next rAF after
+                                                     every pathname change
+               src/components/SunLayer.tsx      -> master scrub trigger on <html>
+               src/components/motion/ScrollProgress.tsx
+               src/components/motion/SectionIndicator.tsx
+               src/components/motion/PageTransition.tsx -> refresh on settle
+               src/lib/motion/lenis.ts          -> lenis.on('scroll',
+                                                     ScrollTrigger.update)
+  CRITICAL:  Layout.tsx and PageTransition.tsx coordinate through
+             document.documentElement.dataset.transitioning. PageTransition
+             clears leftover transforms before refreshing, because a transformed
+             ancestor flips ScrollTrigger's pinType from "fixed" to "transform".
+
+gsap/CustomEase
+  WHAT:      Custom cubic-bezier easing registration.
+  WHERE:     Imported and registered in src/lib/motion/gsap.ts only. Registered
+             alongside ScrollTrigger and useGSAP so no component can create a
+             custom ease before the plugin exists. No component currently
+             instantiates a CustomEase — the ease strings actually used are the
+             stock ones in src/lib/motion/tokens.ts (power3.out, expo.out, ...).
+
+@gsap/react 2.1.2  (useGSAP)
+  WHAT:      React binding that runs an effect inside a gsap.context() and
+             reverts everything on unmount. This is the mechanism that makes the
+             app leak-free under StrictMode double-mounting.
+  WHERE:     src/lib/motion/gsap.ts (register + re-export), then wrapped by
+                 src/hooks/useGsapContext.ts -> useGsapContext(), the hook 14
+               components actually call:
+                 components/SunLayer.tsx
+                 components/hero/SunriseHero.tsx, heroUtils.ts
+                 components/svg/EnergyFlow.tsx (uses useGSAP directly)
+                 components/3d/SolarScene.tsx (uses useGSAP directly)
+                 components/motion/Reveal, RevealText, AnimatedCounter,
+                                    ImageReveal, HorizontalScroll, Parallax,
+                                    PinnedSection, ScrollProgress,
+                                    SectionIndicator
+  NOT USED:  components/Navbar.tsx, components/motion/PageTransition.tsx,
+             CustomCursor.tsx and RaysLoader.tsx drive plain gsap timelines in
+             useEffect with an explicit kill in the cleanup instead.
+             useGsapContext is also the only caller of the revertOnUpdate:true
+             option, so those four do not get config-change reversion.
+
+lenis 1.3.26
+  WHAT:      Smooth/inertial scrolling, driven by the GSAP ticker so it and
+             ScrollTrigger can never disagree about scroll position.
+  WHERE:     src/lib/motion/lenis.ts   -> the only `import Lenis from 'lenis'`.
+             Module-level singleton: initLenis(), destroyLenis(), getLenis(),
+             scrollToTop(). syncTouch:false keeps native touch momentum on
+             mobile.
+             src/hooks/useLenis.ts       -> creates/destroys it for the app
+             lifetime, mounted ONCE in src/components/Layout.tsx above <Outlet/>
+             src/hooks/useSiteNav.ts     -> getLenis() for anchor scrolling
+             src/components/motion/PageTransition.tsx -> scrollToTop() on
+             every route change
+  NOTE:      initLenis() returns null under prefers-reduced-motion, which is how
+             smooth scroll is disabled for the whole app in one place.
+
+tailwindcss 4.3.3  +  @tailwindcss/vite 4.3.3
+  WHAT:      Utility CSS. There is no tailwind.config.js — this is Tailwind v4
+             CSS-first config, so the design system lives in the stylesheet.
+  WHERE:     @tailwindcss/vite is a Vite plugin in vite.config.ts:12.
+             tailwindcss itself is imported in exactly one place:
+               src/index.css:1   -> @import "tailwindcss";
+             src/index.css (1291 lines) then holds @theme at line 89 (the
+             blue / rose / slate / ink / sun token scales) and 17 @keyframes
+             blocks (slowDrift, sun-rotate, hero-sun-spin, hero-mote-drift,
+             floatWave, pulseGlow, shimmer-drift, ...). Components consume the
+             tokens as classes, e.g. bg-ink-950, text-dawn-200, font-display.
+             Motion-side custom properties written by GSAP (--sky-top, --sun-x,
+             --sun-glow-strength, --hero-sun-x/y) are also declared here and are
+             what makes the sun render with JavaScript disabled.
+
+--------------------------------------------------------------------------------
+2. WEBGL LIBRARIES — PRESENT AND FULLY IMPLEMENTED, BUT NOT CURRENTLY MOUNTED
+--------------------------------------------------------------------------------
+
+three 0.186.1  +  @react-three/fiber 9.8.1  +  @types/three 0.186.0
+  WHAT:      A declarative WebGL hero scene: a sun orb rising over an instanced
+             solar array with energy particles travelling to the grid.
+  WHERE:     Exactly 4 files, all in one folder:
+               src/components/3d/SolarScene.tsx    -> <Canvas>, useThree,
+                                                      useGSAP; scrubs sun
+                                                      position, scale, light
+                                                      intensity and camera with
+                                                      ScrollTrigger; sets
+                                                      data-webgl="sun" on <html>
+                                                      so the CSS sun stands down
+               src/components/3d/SunOrb.tsx       -> sphere + additive corona
+                                                      + canvas-generated glow
+                                                      sprite, breathing in useFrame
+               src/components/3d/PanelArray.tsx   -> InstancedMesh panel grid
+               src/components/3d/EnergyParticles.tsx -> single THREE.Points cloud,
+                                                      positions rewritten per
+                                                      frame (no per-particle mesh)
+  STATUS:    src/components/3d/SolarScene.tsx is imported by NOTHING. The chain
+             is self-contained: SolarScene -> SunOrb/PanelArray/EnergyParticles,
+             and no other file reaches in. Confirmed by the build output — the
+             shipped bundle dist/assets/index-*.js contains no WebGLRenderer or
+             InstancedMesh code, so three and R3F are fully tree-shaken out.
+             src/lib/motion/utils.ts still exports canUseWebGL() and
+             getDeviceTier() to gate the scene if it is ever mounted.
+  TO MOUNT:  import { SolarScene } from './3d/SolarScene' in
+             src/components/hero/SunriseHero.tsx. The gating helpers it needs
+             already exist and index.css already honours [data-webgl="sun"].
+
+--------------------------------------------------------------------------------
+3. DEV / BUILD TOOLCHAIN
+--------------------------------------------------------------------------------
+
+vite 8.3.1  +  @vitejs/plugin-react 6.1.1
+  WHAT:      Dev server (port 3000, host 0.0.0.0) and production bundler.
+  WHERE:     vite.config.ts — plugins [react(), tailwindcss()], the '@' path
+             alias, and the DISABLE_HMR env switch for one-shot screenshot runs.
+             index.html:79 is the single entry, <script type="module"
+             src="/src/main.tsx">. Vite copies public/ verbatim and writes dist/.
+
+typescript 7.0.2
+  WHAT:      Type checking only. tsconfig.json sets noEmit:true and
+             moduleResolution:"bundler" + "types": ["vite/client"].
+  WHERE:     package.json scripts only — "build": "tsc -b && vite build" and
+             "lint": "tsc --noEmit". There is no Babel and no transpile-only
+             path: type errors fail the build.
+
+esbuild 0.28.2  /  tsx 4.23.15
+  Transitive/CLI helpers pinned as direct devDependencies. Neither is imported
+  by any file in src/ — esbuild does Vite's TS transform underneath, tsx is the
+  TypeScript-aware Node runner available for scripts. Neither appears in the
+  shipped bundle.
+
+autoprefixer 10.6.1
+  Declared but unused. Tailwind v4 ships Lightning CSS and does its own prefixing
+  internally, and there is no postcss.config.js in the project.
+
+--------------------------------------------------------------------------------
+4. INSTALLED BUT ENTIRELY UNUSED (safe to remove from package.json)
+--------------------------------------------------------------------------------
+
+These are listed under "dependencies" but nothing in src/ imports them. They add
+install weight and nothing to the bundle.
+
+  motion 12.43.0        the Framer Motion successor. src/lib/motion/ is a LOCAL
+                        FOLDER, not this package — grepping for it matches folder
+                        paths, not an import. All animation is GSAP. Note the
+                        name collision: the folder is src/lib/motion/.
+  lucide-react 0.546.0  icon set. Every icon in the app is hand-written inline
+                        SVG, e.g. the check mark in SunriseHero.tsx:424 and the
+                        two nav icons in Layout/SunriseHero.
+  @google/genai 2.24.0  Gemini SDK. metadata.json still declares
+                        "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API", but no source
+                        file imports it and there is no server file in the repo.
+  express 4.22.3        no Express server, no API routes, no node entry point.
+  dotenv 17.4.2         no .env file exists in the project; vite.config.ts reads
+                        process.env.DISABLE_HMR, which needs no dotenv.
+
+--------------------------------------------------------------------------------
+5. THE IMPORT RULES THIS INVENTORY IMPLIES
+--------------------------------------------------------------------------------
+
+  1. Animations import gsap / ScrollTrigger / useGSAP ONLY from
+     src/lib/motion/gsap.ts. Importing from 'gsap' anywhere else risks using a
+     plugin before it is registered, and bypasses the single-registration guard.
+
+  2. Every animation lives in useGsapContext() (or a raw useGSAP/gsap.context
+     with an explicit kill) so it is reverted on unmount. src/main.tsx keeps
+     StrictMode on deliberately: the double mount is the test that leaked
+     ScrollTriggers and doubled timelines would fail.
+
+  3. One Lenis instance, created by src/lib/motion/lenis.ts, mounted once in
+     Layout ABOVE <Outlet/>. Page-scoped code asks for it with getLenis(); it
+     never creates one.
+
+  4. Durations, eases, breakpoints, sky phases and reduced-motion fallbacks come
+     from src/lib/motion/tokens.ts. No magic numbers in components.
+
+  5. prefers-reduced-motion is read through src/hooks/useReducedMotion.ts (live,
+     re-rendering) or src/lib/motion/utils.ts (imperative, for useFrame), never
+     by calling matchMedia inline in a component.
+
+  6. Tailwind tokens are CSS variables in src/index.css. The GSAP-driven ones
+     (--sky-*, --sun-*, --hero-sun-*) are written to :root by SunLayer and
+     SunriseHero, and the CSS consumes them — so the sun still renders with no
+     JavaScript.
+
+================================================================================
 DATA FLOW: ONE NAVIGATION, END TO END
 ================================================================================
 
@@ -18,29 +276,3 @@ DATA FLOW: ONE NAVIGATION, END TO END
 
 Nothing in steps 1-7 tears down a global system. That is the whole point of the
 mounting arrangement in section 2.
-
-
-================================================================================
-KNOWN SEAMS / WHERE FUTURE WORK ATTACHES
-================================================================================
-
-Inner-page bodies. The five inner pages now use the shared <PageHero />, but the
-sections below it are still the original light-themed markup. They are correct
-and readable, but they have not been given Reveal / ImageReveal treatment, and
-they have not been reconciled with the dark palette. The integration point is
-simply: the primitives accept the same className + children contract, so
-adopting them section by section needs no architectural change.
-
-Enquiry form. Still local React state, as it shipped. There is no backend, so
-there is nothing to integrate yet. When a destination is confirmed it needs a
-submit handler on <form onSubmit> - the form markup is already built for it.
-
-Deleted-but-present legacy components. AttractiveBackground, ScrollSun,
-ScrollProgressBar and BackToTop are no longer imported. They can be deleted
-without touching anything; SunLayer and ScrollProgress replaced them, and
-leaving them would risk a future contributor mounting a second sun.
-
-Static hosting. _redirects covers Netlify and Cloudflare Pages. Vercel needs a
-vercel.json rewrite and GitHub Pages needs a 404.html redirect trick instead.
-The SPA is built for a static host, so this is a deploy-config concern, not an
-application one.
