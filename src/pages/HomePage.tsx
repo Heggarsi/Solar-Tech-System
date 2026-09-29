@@ -167,7 +167,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </div>
 
         <HorizontalScroll
-          length={1.6}
+          length={0.5}
           className="mt-14"
           trackClassName="gap-5 py-4 px-6 sm:gap-6 lg:px-[max(3rem,calc((100vw-80rem)/2))]"
         >

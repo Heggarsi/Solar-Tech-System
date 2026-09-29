@@ -1127,8 +1127,11 @@ html.light-cinematic body {
 
 .hero-sun {
   position: absolute;
-  left: var(--sun-x, 73%);
-  top: var(--sun-y, 20%);
+  /* Namespaced deliberately: the global SunLayer publishes unitless --sun-x /
+     --sun-y on :root, which inherits down. Reusing those names here would read
+     the global sun's 0-1 value and invalidate these lengths. */
+  left: var(--hero-sun-x, 73%);
+  top: var(--hero-sun-y, 20%);
   width: 30rem;
   height: 30rem;
   margin-left: -15rem;

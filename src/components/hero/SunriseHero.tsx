@@ -93,8 +93,8 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
           if (heroBox.width < 1) return;
           const x = ((archBox.left + archBox.width / 2 - heroBox.left) / heroBox.width) * 100;
           const y = archBox.top - heroBox.top;
-          root.style.setProperty('--sun-x', `${x.toFixed(2)}%`);
-          root.style.setProperty('--sun-y', `${Math.round(y)}px`);
+          root.style.setProperty('--hero-sun-x', `${x.toFixed(2)}%`);
+          root.style.setProperty('--hero-sun-y', `${Math.round(y)}px`);
         };
         place();
         const ro = new ResizeObserver(place);
@@ -302,8 +302,10 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
           The field starts exactly at the header's bottom edge and is
           overflow-hidden, so no part of the sun can ever render behind the
           navbar. The mask eases it in over the first 3rem, which reads as the
-          sun cresting the arch rather than being sliced off. --sun-x / --sun-y
-          are measured from the arch so it stays welded to the photograph. */}
+          sun cresting the arch rather than being sliced off. --hero-sun-x /
+          --hero-sun-y are measured from the arch so it stays welded to the
+          photograph. They are namespaced because the global SunLayer publishes
+          its own --sun-x / --sun-y on :root and custom properties inherit. */}
       <div className="hero-sun-field" aria-hidden="true">
         <div data-sun className="hero-sun">
           {/* Pulsing glow */}

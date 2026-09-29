@@ -54,7 +54,15 @@ export const Layout: React.FC = () => {
   // A route change swaps the whole <Outlet /> subtree, so every ScrollTrigger
   // created inside the outgoing page is now detached from the document. Refresh
   // on the next frame to recompute start/end positions against the new DOM.
+  //
+  // Skip it while PageTransition is animating: it holds the new page root at
+  // `y: 24` and only clears that transform on completion. Measuring now would
+  // bake the offset into every trigger, and ScrollTrigger would resolve
+  // pinType against a transformed ancestor. PageTransition refreshes itself
+  // the moment it lands. Reduced motion and first render never set the flag, so
+  // those paths fall through to this refresh as before.
   useEffect(() => {
+    if (document.documentElement.dataset.transitioning) return;
     const id = window.requestAnimationFrame(() => ScrollTrigger.refresh());
     return () => window.cancelAnimationFrame(id);
   }, [location.pathname]);

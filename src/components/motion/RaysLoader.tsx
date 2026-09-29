@@ -48,7 +48,18 @@ export const RaysLoader: React.FC<RaysLoaderProps> = ({
     setActive(true);
     document.body.classList.add('scroll-locked');
 
+    // Backstop. The overlay below is opaque and covers the viewport, and
+    // scroll-locked sets `overflow: hidden; touch-action: none` on <body>. If
+    // the timeline is ever killed before onComplete, both stay put and the user
+    // gets a frozen page behind an opaque sheet. Nothing here should ever take
+    // this long, so a generous ceiling is a safe way to guarantee release.
+    const bail = window.setTimeout(() => {
+      document.body.classList.remove('scroll-locked');
+      setActive(false);
+    }, 4000);
+
     return () => {
+      window.clearTimeout(bail);
       document.body.classList.remove('scroll-locked');
     };
   }, [threshold, reduced]);
@@ -70,6 +81,12 @@ export const RaysLoader: React.FC<RaysLoaderProps> = ({
         }
         document.body.classList.remove('scroll-locked');
         onDone?.();
+      },
+      // A killed timeline never fires onComplete, so release the scroll lock
+      // here too rather than waiting for the backstop timeout.
+      onInterrupt: () => {
+        setActive(false);
+        document.body.classList.remove('scroll-locked');
       },
     });
 

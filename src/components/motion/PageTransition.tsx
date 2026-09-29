@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { gsap } from '../../lib/motion/gsap';
+import { gsap, ScrollTrigger } from '../../lib/motion/gsap';
 import { EASE, PAGE_TRANSITION } from '../../lib/motion/tokens';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { scrollToTop } from '../../lib/motion/lenis';
@@ -41,10 +41,32 @@ export const PageTransition: React.FC<{ children: React.ReactNode }> = ({
     const sheet = sheetRef.current;
     if (!sheet) return;
 
+    // Announce that trigger positions are invalid until we land. Layout skips
+    // its own refresh while this is set and relies on the onComplete refresh.
+    const root = document.documentElement;
+    root.dataset.transitioning = 'true';
+
     // The freshly mounted page root lives directly inside <main>.
     const page = document.querySelector<HTMLElement>('#main > *');
 
-    const tl = gsap.timeline();
+    const settle = () => {
+      if (page) gsap.set(page, { clearProps: 'opacity,transform' });
+      delete root.dataset.transitioning;
+    };
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        // Critical: `y: 0` leaves `transform: translate(0px, 0px)` on the page
+        // root, which is NOT `none`. A transformed ancestor becomes the
+        // containing block for fixed descendants, and ScrollTrigger walks up
+        // from every pinned element looking for exactly that — finding one
+        // flips pinType from "fixed" to "transform" and mis-places the pin,
+        // which shows up as a blank band mid-scroll. Clear it, then refresh so
+        // trigger positions are measured against a transform-free ancestor.
+        settle();
+        ScrollTrigger.refresh();
+      },
+    });
 
     tl.fromTo(
       sheet,
@@ -76,7 +98,7 @@ export const PageTransition: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       tl.kill();
       // Guarantee the next page is never left invisible if we unmount mid-flight.
-      if (page) gsap.set(page, { clearProps: 'opacity,transform' });
+      settle();
     };
   }, [location.pathname, reduced]);
 
