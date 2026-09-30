@@ -1,6 +1,7 @@
 import React from 'react';
 import { PageHero } from '../components/PageHero';
 import { SITE_INFO } from '../data/siteData';
+import { ROUTES, routePath } from '../content/site';
 
 interface ClientsPageProps {
   onNavigate: (path: string) => void;
@@ -36,7 +37,7 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ onNavigate }) => {
       <PageHero
         chapter="Chapter 04 — The People"
         crumbs={[
-          { label: 'Home', path: 'solartechsystems.html' },
+          { label: 'Home', path: ROUTES.home },
           { label: 'Our Clients' },
         ]}
         titleLines={['Our Clients']}
@@ -96,8 +97,8 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ onNavigate }) => {
           </p>
           <div className="flex flex-wrap justify-center gap-4 pt-2">
             <a
-              href="contact-us.html"
-              onClick={(e) => { e.preventDefault(); onNavigate('contact-us.html'); }}
+              href={routePath(ROUTES.contact)}
+              onClick={(e) => { e.preventDefault(); onNavigate(ROUTES.contact); }}
               className="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 shadow-md transition-all"
             >
               <span>Enquire Now &rarr;</span>

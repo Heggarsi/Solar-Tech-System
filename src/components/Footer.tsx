@@ -3,7 +3,7 @@ import { useSiteNav } from '../hooks/useSiteNav';
 import { Reveal } from './motion/Reveal';
 import { RevealText } from './motion/RevealText';
 import { MagneticButton } from './motion/MagneticButton';
-import { ROUTES, SERVICES, SITE_INFO } from '../content/site';
+import { ROUTES, SERVICES, SITE_INFO, routePath } from '../content/site';
 
 /**
  * Footer with the giant masked CTA, staggered content, and the sun "set" into
@@ -49,7 +49,10 @@ export const Footer: React.FC<{ showCta?: boolean }> = ({ showCta = true }) => {
               className="font-display text-[clamp(2.75rem,9vw,7rem)] font-bold leading-[0.92] tracking-tight text-white"
             />
             <Reveal delay={0.15} className="mt-8 flex flex-wrap items-center gap-4">
-              <MagneticButton href={ROUTES.contact} onClick={(e) => handle(e, ROUTES.contact)}>
+              <MagneticButton
+                href={routePath(ROUTES.contact)}
+                onClick={(e) => handle(e, ROUTES.contact)}
+              >
                 Get a Free Quote
               </MagneticButton>
               <MagneticButton
@@ -94,8 +97,8 @@ export const Footer: React.FC<{ showCta?: boolean }> = ({ showCta = true }) => {
               {SERVICES.map((s) => (
                 <li key={s.slug}>
                   <a
-                    href={s.file}
-                    onClick={(e) => handle(e, s.file)}
+                    href={routePath(s.slug)}
+                    onClick={(e) => handle(e, s.slug)}
                     className="text-dawn-200/70 transition-colors hover:text-sun-300"
                   >
                     {s.title}
@@ -164,7 +167,7 @@ export const Footer: React.FC<{ showCta?: boolean }> = ({ showCta = true }) => {
           <p>&copy; {new Date().getFullYear()} Solar Tech Systems. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <a
-              href={ROUTES.home}
+              href={routePath(ROUTES.home)}
               onClick={(e) => handle(e, ROUTES.home)}
               className="transition-colors hover:text-sun-300"
             >

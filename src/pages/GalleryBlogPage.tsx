@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageHero } from '../components/PageHero';
 import { GALLERY_PHOTOS, BLOG_POSTS, SITE_INFO } from '../data/siteData';
+import { ROUTES, routePath } from '../content/site';
 import { BlogPost } from '../types';
 
 interface GalleryBlogPageProps {
@@ -61,7 +62,7 @@ export const GalleryBlogPage: React.FC<GalleryBlogPageProps> = ({ onNavigate, in
       <PageHero
         chapter="Chapter 05 — Field Notes"
         crumbs={[
-          { label: 'Home', path: 'solartechsystems.html' },
+          { label: 'Home', path: ROUTES.home },
           { label: 'Gallery & Blog' },
         ]}
         titleLines={['Gallery & Insights']}
@@ -213,8 +214,8 @@ export const GalleryBlogPage: React.FC<GalleryBlogPageProps> = ({ onNavigate, in
                       Published by Solar Tech Systems Engineering Department
                     </div>
                     <a
-                      href="contact-us.html"
-                      onClick={(e) => { e.preventDefault(); onNavigate('contact-us.html'); }}
+                      href={routePath(ROUTES.contact)}
+                      onClick={(e) => { e.preventDefault(); onNavigate(ROUTES.contact); }}
                       className="text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 px-5 py-2.5 rounded-full transition-colors"
                     >
                       Discuss Your Project &rarr;
@@ -382,8 +383,8 @@ export const GalleryBlogPage: React.FC<GalleryBlogPageProps> = ({ onNavigate, in
           </p>
           <div className="flex flex-wrap justify-center gap-4 pt-2">
             <a
-              href="contact-us.html"
-              onClick={(e) => { e.preventDefault(); onNavigate('contact-us.html'); }}
+              href={routePath(ROUTES.contact)}
+              onClick={(e) => { e.preventDefault(); onNavigate(ROUTES.contact); }}
               className="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 shadow-md transition-all"
             >
               <span>Enquire Now &rarr;</span>

@@ -9,10 +9,10 @@ import { RaysLoader } from './motion/RaysLoader';
 import { PageTransition } from './motion/PageTransition';
 import { useLenis } from '../hooks/useLenis';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
-import { ROUTES, ROUTE_META } from '../content/site';
+import { ROUTES, ROUTE_META, routePath } from '../content/site';
 import { ScrollTrigger } from '../lib/motion/gsap';
 
-const HOME_PATH = `/${ROUTES.home}`;
+const HOME_PATH = routePath(ROUTES.home);
 
 /**
  * Routes that keep the footer's giant "Let's power what's next." band. Every
@@ -20,7 +20,7 @@ const HOME_PATH = `/${ROUTES.home}`;
  * noise. Home opens with it, and the contact page is the one page where a
  * "Get a Free Quote" prompt still has something left to say.
  */
-const FOOTER_CTA_ROUTES = new Set<string>([ROUTES.home, ROUTES.contact]);
+const FOOTER_CTA_ROUTES = new Set<string>([HOME_PATH, routePath(ROUTES.contact)]);
 
 /**
  * Root shell. Lenis and the sun layer are mounted HERE, above <Outlet />, so
@@ -31,13 +31,14 @@ export const Layout: React.FC = () => {
   const location = useLocation();
   useLenis();
 
-  const isHome = location.pathname === HOME_PATH || location.pathname === '/';
-  const showFooterCta =
-    location.pathname === '/' || FOOTER_CTA_ROUTES.has(location.pathname.replace(/^\//, ''));
-  const meta =
-    ROUTE_META[location.pathname.replace(/^\//, '')] ?? ROUTE_META[ROUTES.home];
+  // One canonical pathname per request, so a stray trailing slash cannot make
+  // two URLs claim the same page (or make the meta lookup miss).
+  const pathname = routePath(location.pathname);
+  const isHome = pathname === HOME_PATH;
+  const showFooterCta = FOOTER_CTA_ROUTES.has(pathname);
+  const meta = ROUTE_META[pathname.replace(/^\//, '') || ROUTES.home] ?? ROUTE_META[ROUTES.home];
 
-  useDocumentMeta(meta);
+  useDocumentMeta(meta, pathname);
 
   // Trigger positions depend on image + font metrics, so rebuild once the
   // document has actually settled. Also handles bfcache restores.

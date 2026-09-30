@@ -1,6 +1,7 @@
 import React from 'react';
 import { PageHero } from '../components/PageHero';
 import { WHY_CHOOSE_ITEMS, SITE_INFO } from '../data/siteData';
+import { ROUTES, routePath } from '../content/site';
 
 interface AboutPageProps {
   onNavigate: (path: string) => void;
@@ -13,7 +14,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
       <PageHero
         chapter="Chapter 02 — The Studio"
         crumbs={[
-          { label: 'Home', path: 'solartechsystems.html' },
+          { label: 'Home', path: ROUTES.home },
           { label: 'About Us' },
         ]}
         titleLines={['About Solartech Systems']}
@@ -75,16 +76,16 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
             <div className="pt-2 flex flex-wrap gap-4">
               <a
-                href="solartechsystems.html#services"
-                onClick={(e) => { e.preventDefault(); onNavigate('solartechsystems.html'); }}
+                href={routePath(ROUTES.home)}
+                onClick={(e) => { e.preventDefault(); onNavigate(ROUTES.home); }}
                 className="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 shadow-sm transition-all"
               >
                 <span>What We Offer &rarr;</span>
               </a>
 
               <a
-                href="contact-us.html"
-                onClick={(e) => { e.preventDefault(); onNavigate('contact-us.html'); }}
+                href={routePath(ROUTES.contact)}
+                onClick={(e) => { e.preventDefault(); onNavigate(ROUTES.contact); }}
                 className="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition-all"
               >
                 <span>Contact Us</span>
@@ -146,8 +147,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           </p>
           <div className="flex flex-wrap justify-center gap-4 pt-2">
             <a
-              href="contact-us.html"
-              onClick={(e) => { e.preventDefault(); onNavigate('contact-us.html'); }}
+              href={routePath(ROUTES.contact)}
+              onClick={(e) => { e.preventDefault(); onNavigate(ROUTES.contact); }}
               className="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 shadow-md transition-all"
             >
               <span>Enquire Now &rarr;</span>

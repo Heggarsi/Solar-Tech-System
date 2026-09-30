@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PageHero } from '../components/PageHero';
 import { SITE_INFO } from '../data/siteData';
+import { ROUTES } from '../content/site';
 
 interface ContactPageProps {
   onNavigate: (path: string) => void;
@@ -41,7 +42,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
       <PageHero
         chapter="Chapter 07 — Dusk"
         crumbs={[
-          { label: 'Home', path: 'solartechsystems.html' },
+          { label: 'Home', path: ROUTES.home },
           { label: 'Contact Us' },
         ]}
         titleLines={['Get In Touch With Us']}

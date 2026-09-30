@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { SITE_ORIGIN } from '../content/site';
 
 /**
  * Per-route document metadata for a client-side SPA.
@@ -24,7 +25,22 @@ const setMeta = (selector: string, attr: 'name' | 'property', key: string, conte
   el.setAttribute('content', content);
 };
 
-export const useDocumentMeta = ({ title, description }: PageMeta) => {
+const setCanonical = (href: string) => {
+  let el = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (!el) {
+    el = document.createElement('link');
+    el.setAttribute('rel', 'canonical');
+    document.head.appendChild(el);
+  }
+  el.setAttribute('href', href);
+};
+
+/**
+ * `pathname` must already be canonical (no trailing slash). Each page declares
+ * its own absolute URL, which is what stops every page from claiming the
+ * homepage as its canonical and being treated as a duplicate of it.
+ */
+export const useDocumentMeta = ({ title, description }: PageMeta, pathname: string) => {
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
@@ -40,5 +56,10 @@ export const useDocumentMeta = ({ title, description }: PageMeta) => {
       'twitter:description',
       description,
     );
-  }, [title, description]);
+
+    const url = `${SITE_ORIGIN}${pathname}`;
+    setCanonical(url);
+    setMeta('meta[property="og:url"]', 'property', 'og:url', url);
+    setMeta('meta[name="twitter:url"]', 'name', 'twitter:url', url);
+  }, [title, description, pathname]);
 };

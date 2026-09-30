@@ -20,7 +20,6 @@ export const SITE_INFO = {
 export const SERVICES: ServiceItem[] = [
   {
     slug: 'solar-power-plant',
-    file: 'solar-power-plant.html',
     title: 'Solar Power Plant',
     desc: 'Empowering industries with turnkey solar plants built for maximum output and reliability. From design to commissioning, Solartech delivers sustainable energy that performs.',
     img: '/images/service-solar-power-plant.jpg',
@@ -40,7 +39,6 @@ export const SERVICES: ServiceItem[] = [
   },
   {
     slug: 'solar-rooftop',
-    file: 'solar-rooftop.html',
     title: 'Solar Rooftop',
     desc: 'Transform your rooftop into a powerhouse of savings and sustainability. Solartech rooftop systems combine smart design with seamless integration for long-term value.',
     img: '/images/service-solar-rooftop.jpg',
@@ -60,7 +58,6 @@ export const SERVICES: ServiceItem[] = [
   },
   {
     slug: '33kv-transmission-line',
-    file: '33kv-transmission-line.html',
     title: '33 kV Transmission Line',
     desc: 'Precision-built transmission solutions that ensure uninterrupted energy flow. Solartech manages every stage - from material to ROW - with uncompromised efficiency.',
     img: '/images/service-33kv-transmission-line.jpg',
@@ -80,7 +77,6 @@ export const SERVICES: ServiceItem[] = [
   },
   {
     slug: '33-11kv-substation-uss',
-    file: '33-11kv-substation-uss.html',
     title: '33 / 11 kV Substation (USS)',
     desc: 'Robust substations engineered for safety, stability, and seamless connectivity. Solartech designs and commissions USS systems that keep your power infrastructure future-ready.',
     img: '/images/service-33-11kv-substation.jpg',

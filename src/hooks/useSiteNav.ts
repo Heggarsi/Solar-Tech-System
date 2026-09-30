@@ -1,13 +1,14 @@
 import { useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getLenis } from '../lib/motion/lenis';
+import { routePath } from '../content/site';
 
 /**
  * Bridges the existing pages' `onNavigate(path)` contract onto React Router.
  *
- * The whole site historically addressed pages by their shipped filenames
- * ("about-us.html"), so that shape is preserved: callers pass the same strings
- * they always have and we resolve them to real router paths.
+ * Pages pass a route slug ("about-us") or an already-rooted path ("/"), and we
+ * normalise both into a real router path. routePath() also tolerates a leading
+ * slash, so callers may pass "/about-us" without producing a "//" path.
  *
  * Anchor targets ("#services") navigate first, then scroll once the new page
  * has mounted, honouring Lenis when it is active.
@@ -20,7 +21,7 @@ export const useSiteNav = () => {
     (path: string) => {
       if (path.startsWith('#') || path.includes('#')) {
         const [page, targetId] = path.split('#');
-        const targetPath = page ? `/${page}` : location.pathname;
+        const targetPath = page ? routePath(page) : location.pathname;
 
         const scrollToTarget = () => {
           const el = document.getElementById(targetId);
@@ -43,12 +44,12 @@ export const useSiteNav = () => {
         return;
       }
 
-      navigate(`/${path}`);
+      navigate(routePath(path));
     },
     [navigate, location.pathname],
   );
 };
 
-/** Current route filename, e.g. "about-us.html". */
+/** Current route slug, e.g. "about-us"; "/" for the home page. */
 export const useCurrentFile = (): string =>
-  useLocation().pathname.replace(/^\//, '') || 'solartechsystems.html';
+  useLocation().pathname.replace(/^\//, '') || '/';

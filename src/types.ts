@@ -1,6 +1,6 @@
 export interface ServiceItem {
+  /** Also the route slug: the site is addressed as "/<slug>", no .html. */
   slug: string;
-  file: string;
   title: string;
   desc: string;
   img: string;

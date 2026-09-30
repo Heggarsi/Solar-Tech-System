@@ -1,3 +1,25 @@
-/* SPA fallback for static hosts.
-    Every .html path the site has always shipped is a real client-side route,
-    so unknown paths must serve the shell rather than a 404. */
+# Netlify / Cloudflare Pages redirects.
+#
+# 1. Legacy .html paths -> clean routes, as real HTTP 301s.
+#    These are the paths the site has shipped for years, so they are still linked
+#    from outside (old blog posts, Google Business Profile, printed material).
+#    A 301 is a server response: a client-side <Navigate> redirect would look
+#    identical to a visitor but tells a crawler nothing, so these MUST live here.
+#    Keep this list in sync with LEGACY_REDIRECTS in src/content/site.ts.
+#
+# 2. SPA fallback last: every clean path is a client-side route, so anything not
+#    matched above must serve the shell rather than a 404. Netlify rewrites the
+#    URL, so the canonical tags in src/hooks/useDocumentMeta.ts remain correct.
+
+/solartechsystems.html        /                        301
+/index.html                   /                        301
+/about-us.html                /about-us                301
+/our-clients.html             /our-clients             301
+/gallery-blog.html            /gallery-blog            301
+/contact-us.html              /contact-us              301
+/solar-power-plant.html       /solar-power-plant       301
+/solar-rooftop.html           /solar-rooftop           301
+/33kv-transmission-line.html  /33kv-transmission-line  301
+/33-11kv-substation-uss.html  /33-11kv-substation-uss  301
+
+/*                            /index.html              200

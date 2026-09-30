@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SERVICES, WHY_CHOOSE_ITEMS, SITE_INFO } from '../data/siteData';
-import { HOME_STATS } from '../content/site';
+import { HOME_STATS, ROUTES, routePath } from '../content/site';
 import { useSiteNav } from '../hooks/useSiteNav';
 import { Reveal, RevealFade } from '../components/motion/Reveal';
 import { RevealText, ScrubWords } from '../components/motion/RevealText';
@@ -77,8 +77,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               />
               <Reveal className="pt-2">
                 <a
-                  href="about-us.html"
-                  onClick={(e) => { e.preventDefault(); onNavigate('about-us.html'); }}
+                  href={routePath(ROUTES.about)}
+                  onClick={(e) => { e.preventDefault(); onNavigate(ROUTES.about); }}
                   className="hairline-btn inline-flex items-center gap-2 text-sm font-semibold text-ink-950"
                 >
                   <span>Read More</span>
@@ -180,8 +180,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </div>
                 <MagneticButton
                   variant="ghost"
-                  href={service.file}
-                  onClick={(e) => { e.preventDefault(); onNavigate(service.file); }}
+                  href={routePath(service.slug)}
+                  onClick={(e) => { e.preventDefault(); onNavigate(service.slug); }}
                   arrow
                 >
                   Read More

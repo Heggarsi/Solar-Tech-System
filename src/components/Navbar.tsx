@@ -9,6 +9,7 @@ import {
   ROUTES,
   SERVICES,
   SITE_INFO,
+  routePath,
 } from '../content/site';
 import { EASE } from '../lib/motion/tokens';
 
@@ -47,14 +48,14 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = 'home' }) => {
   const lastScrollY = useRef(0);
   const overlayTl = useRef<gsap.core.Timeline | null>(null);
 
-  const currentFile = location.pathname.replace(/^\//, '') || ROUTES.home;
+  const currentPath = location.pathname.replace(/\/+$/, '') || '/';
 
-  const isActive = (path: string) =>
-    path === ROUTES.home
-      ? currentFile === ROUTES.home || currentFile === ''
-      : currentFile.includes(path);
+  const isActive = (path: string) => {
+    const target = path === ROUTES.home ? '/' : routePath(path);
+    return currentPath === target;
+  };
 
-  const isServiceActive = SERVICES.some((s) => currentFile.includes(s.file));
+  const isServiceActive = SERVICES.some((s) => currentPath === routePath(s.slug));
 
   // ---- scroll state -------------------------------------------------------
   useEffect(() => {
@@ -281,7 +282,7 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = 'home' }) => {
           <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
             {/* Brand */}
             <a
-              href={ROUTES.home}
+              href={routePath(ROUTES.home)}
               onClick={(e) => handleNav(e, ROUTES.home)}
               className="flex items-center gap-3"
               aria-label="Solar Tech Systems — home"
@@ -328,8 +329,8 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = 'home' }) => {
                           {SERVICES.map((s) => (
                             <a
                               key={s.slug}
-                              href={s.file}
-                              onClick={(e) => handleNav(e, s.file)}
+                              href={routePath(s.slug)}
+                              onClick={(e) => handleNav(e, s.slug)}
                               className="block rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/5"
                             >
                               {s.title}
@@ -342,7 +343,7 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = 'home' }) => {
                 ) : (
                   <a
                     key={link.label}
-                    href={link.path}
+                    href={routePath(link.path)}
                     onClick={(e) => handleNav(e, link.path as string)}
                     className={`nav-link ${isActive(link.path) ? 'is-active' : ''}`}
                     aria-current={isActive(link.path) ? 'page' : undefined}
@@ -356,7 +357,7 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = 'home' }) => {
             {/* Actions */}
             <div className="flex items-center gap-3">
               <a
-                href={ROUTES.contact}
+                href={routePath(ROUTES.contact)}
                 onClick={(e) => handleNav(e, ROUTES.contact)}
                 className="btn-sun hidden !min-h-[40px] !px-5 !py-2 text-sm sm:inline-flex"
               >
@@ -423,8 +424,8 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = 'home' }) => {
                   <a
                     key={s.slug}
                     data-menu-link
-                    href={s.file}
-                    onClick={(e) => handleNav(e, s.file)}
+                    href={routePath(s.slug)}
+                    onClick={(e) => handleNav(e, s.slug)}
                     className="block rounded-lg px-3 py-2.5 text-base text-dawn-200/80"
                   >
                     {s.title}
@@ -435,7 +436,7 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = 'home' }) => {
               <a
                 key={link.label}
                 data-menu-link
-                href={link.path}
+                href={routePath(link.path)}
                 onClick={(e) => handleNav(e, link.path as string)}
                 className={`block py-2 font-display text-3xl font-semibold ${
                   isActive(link.path) ? 'text-sun-300' : 'text-white'
@@ -448,9 +449,9 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = 'home' }) => {
 
           <a
             data-menu-link
-            href={ROUTES.contact}
-            onClick={(e) => handleNav(e, ROUTES.contact)}
-            className="btn-sun mt-6 w-full"
+                href={routePath(ROUTES.contact)}
+                onClick={(e) => handleNav(e, ROUTES.contact)}
+                className="btn-sun mt-6 w-full"
           >
             <span>Contact Us</span>
             <span className="btn-arrow" aria-hidden="true">

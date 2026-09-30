@@ -44,16 +44,49 @@ import {
 // Routes
 // ---------------------------------------------------------------------------
 /**
- * URL filenames are preserved exactly as they ship today, because the static
- * host serves real .html-looking paths and inbound links depend on them.
+ * Canonical origin. Single source of truth for absolute URLs, so the sitemap,
+ * the per-route canonical tags and og:url can never drift apart.
+ */
+export const SITE_ORIGIN = 'https://solartechsystems.co.in';
+
+/**
+ * Clean, extension-less routes. The site used to ship real .html filenames;
+ * those are now legacy paths that permanently redirect (see LEGACY_REDIRECTS
+ * and public/_redirects), because a .html-looking path on a static host can be
+ * served as a literal file and never boot the SPA at all.
+ *
+ * `home` is the bare root, so it reads correctly in hrefs.
  */
 export const ROUTES = {
-  home: 'solartechsystems.html',
-  about: 'about-us.html',
-  clients: 'our-clients.html',
-  galleryBlog: 'gallery-blog.html',
-  contact: 'contact-us.html',
+  home: '/',
+  about: 'about-us',
+  clients: 'our-clients',
+  galleryBlog: 'gallery-blog',
+  contact: 'contact-us',
 } as const;
+
+/** Route slug -> absolute router path. Tolerates '' , '/' and '/about-us'. */
+export const routePath = (slug: string): string => {
+  const trimmed = slug.replace(/^\/+|\/+$/g, '');
+  return trimmed ? `/${trimmed}` : '/';
+};
+
+/**
+ * Every .html path the site has ever shipped, mapped to its clean successor.
+ * Kept here so the in-app fallback routes and public/_redirects stay in sync.
+ */
+export const LEGACY_REDIRECTS: ReadonlyArray<readonly [string, string]> = [
+  ['/solartechsystems.html', ROUTES.home],
+  ['/index.html', ROUTES.home],
+  ['/about-us.html', ROUTES.about],
+  ['/our-clients.html', ROUTES.clients],
+  ['/gallery-blog.html', ROUTES.galleryBlog],
+  ['/contact-us.html', ROUTES.contact],
+  ['/solar-power-plant.html', 'solar-power-plant'],
+  ['/solar-rooftop.html', 'solar-rooftop'],
+  ['/33kv-transmission-line.html', '33kv-transmission-line'],
+  ['/33-11kv-substation-uss.html', '33-11kv-substation-uss'],
+];
 
 export interface NavLink {
   label: string;
@@ -275,7 +308,7 @@ const serviceMeta = (title: string, desc: string): RouteMeta => ({
 });
 
 SERVICES.forEach((s) => {
-  ROUTE_META[s.file] = serviceMeta(s.title, s.desc);
+  ROUTE_META[s.slug] = serviceMeta(s.title, s.desc);
 });
 
 // ---------------------------------------------------------------------------

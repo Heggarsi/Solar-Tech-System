@@ -1,6 +1,7 @@
 import React from 'react';
 import { PageHero } from '../components/PageHero';
 import { SERVICES, WHY_CHOOSE_ITEMS, SITE_INFO } from '../data/siteData';
+import { routePath, ROUTES } from '../content/site';
 import { ServiceItem } from '../types';
 
 interface ServicePageProps {
@@ -17,7 +18,7 @@ export const ServicePage: React.FC<ServicePageProps> = ({ service, onNavigate })
       <PageHero
         chapter="Chapter 03 — Capabilities"
         crumbs={[
-          { label: 'Home', path: 'solartechsystems.html' },
+          { label: 'Home', path: ROUTES.home },
           { label: 'Products / Services' },
           { label: service.title },
         ]}
@@ -110,8 +111,8 @@ export const ServicePage: React.FC<ServicePageProps> = ({ service, onNavigate })
               {otherServices.map((other) => (
                 <a
                   key={other.slug}
-                  href={other.file}
-                  onClick={(e) => { e.preventDefault(); onNavigate(other.file); }}
+                  href={routePath(other.slug)}
+                  onClick={(e) => { e.preventDefault(); onNavigate(other.slug); }}
                   className="inline-flex items-center px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-200 hover:border-rose-400 hover:text-rose-600 shadow-sm transition-all"
                 >
                   <span>{other.title} &rarr;</span>
@@ -174,8 +175,8 @@ export const ServicePage: React.FC<ServicePageProps> = ({ service, onNavigate })
           </p>
           <div className="flex flex-wrap justify-center gap-4 pt-2">
             <a
-              href="contact-us.html"
-              onClick={(e) => { e.preventDefault(); onNavigate('contact-us.html'); }}
+              href={routePath(ROUTES.contact)}
+              onClick={(e) => { e.preventDefault(); onNavigate(ROUTES.contact); }}
               className="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 shadow-md transition-all"
             >
               <span>Enquire Now &rarr;</span>
