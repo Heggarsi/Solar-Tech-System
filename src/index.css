@@ -1053,9 +1053,10 @@ html.light-cinematic body {
    here is namespaced under .hero so nothing outside it can be affected.
 
    On top of that base sits one full-bleed project photograph
-   (hero_clean_tech.jpg) plus the scrims below, which is what the visitor
-   actually sees. The navy gradient remains as the base paint, so the
-   section still reads correctly if the photograph is slow or missing.
+   (hero-array-{640,1024,1600}.{avif,webp}, picked via srcset) plus the scrims
+   below, which is what the visitor actually sees. The navy gradient remains as
+   the base paint, so the section still reads correctly if the photograph is
+   slow or missing.
    ===================================================================== */
 /* Fallback until JS measures the real header (utility strip + nav row). */
 :root {

@@ -192,16 +192,18 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
         className="pointer-events-none absolute inset-x-0 -top-[8%] -z-10 h-[116%] overflow-hidden"
         aria-hidden="true"
       >
-        <img
-          data-hero-bg-img
-          src="/images/hero_clean_tech.jpg"
-          alt=""
-          width={1376}
-          height={768}
-          fetchPriority="high"
-          decoding="async"
-          className="block h-full w-full object-cover will-change-transform"
-        />
+        <picture className="block h-full w-full">
+          <img
+            data-hero-bg-img
+            src="/images/hero_clean_tech1.jpg"
+            alt=""
+            width={1200}
+            height={896}
+            fetchPriority="high"
+            decoding="async"
+            className="block h-full w-full object-cover will-change-transform"
+          />
+        </picture>
       </div>
       {/* Navy scrims: strongest under the header and the copy on the left,
           lifting toward the right so the photograph still reads as a photo. */}
