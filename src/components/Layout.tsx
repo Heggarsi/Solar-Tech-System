@@ -15,6 +15,14 @@ import { ScrollTrigger } from '../lib/motion/gsap';
 const HOME_PATH = `/${ROUTES.home}`;
 
 /**
+ * Routes that keep the footer's giant "Let's power what's next." band. Every
+ * other page already ends with its own dark CTA band, so repeating it there is
+ * noise. Home opens with it, and the contact page is the one page where a
+ * "Get a Free Quote" prompt still has something left to say.
+ */
+const FOOTER_CTA_ROUTES = new Set<string>([ROUTES.home, ROUTES.contact]);
+
+/**
  * Root shell. Lenis and the sun layer are mounted HERE, above <Outlet />, so
  * both survive every route change and their ScrollTriggers are never torn down
  * and rebuilt on navigation.
@@ -24,6 +32,8 @@ export const Layout: React.FC = () => {
   useLenis();
 
   const isHome = location.pathname === HOME_PATH || location.pathname === '/';
+  const showFooterCta =
+    location.pathname === '/' || FOOTER_CTA_ROUTES.has(location.pathname.replace(/^\//, ''));
   const meta =
     ROUTE_META[location.pathname.replace(/^\//, '')] ?? ROUTE_META[ROUTES.home];
 
@@ -86,7 +96,7 @@ export const Layout: React.FC = () => {
         <main id="main" className="relative z-10 w-full flex-1">
           <Outlet />
         </main>
-        <Footer />
+        <Footer showCta={showFooterCta} />
       </PageTransition>
     </div>
   );

@@ -1051,6 +1051,11 @@ html.light-cinematic body {
    global sky layer, because the global sun travels across the WHOLE
    document and would place a 44vmin orb behind the header. Everything
    here is namespaced under .hero so nothing outside it can be affected.
+
+   On top of that base sits one full-bleed project photograph
+   (hero_clean_tech.jpg) plus the scrims below, which is what the visitor
+   actually sees. The navy gradient remains as the base paint, so the
+   section still reads correctly if the photograph is slow or missing.
    ===================================================================== */
 /* Fallback until JS measures the real header (utility strip + nav row). */
 :root {
@@ -1087,36 +1092,36 @@ html.light-cinematic body {
   );
 }
 
-/* Warm bloom behind the arch, lighting the photograph's top edge. */
-.hero-bloom {
-  right: -4%;
-  top: var(--header-height);
-  height: 62%;
-  width: 62%;
-  max-width: 44rem;
-  z-index: 0;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(255, 159, 28, 0.15) 0%,
-    rgba(255, 107, 53, 0.055) 42%,
-    transparent 70%
-  );
+/* Navy scrim over the backdrop photograph. Three stacked washes keep the
+   copy, the header and the stats strip legible without flattening the image:
+   a left-to-right wash for the column of text, a bottom wash for the stats,
+   and a top wash so the navbar never fights the picture. */
+.hero-photo-scrim {
+  background:
+    linear-gradient(
+      to right,
+      rgba(5, 11, 20, 0.94) 0%,
+      rgba(5, 11, 20, 0.78) 38%,
+      rgba(5, 11, 20, 0.44) 72%,
+      rgba(5, 11, 20, 0.34) 100%
+    ),
+    linear-gradient(to top, rgba(5, 11, 20, 0.95) 0%, rgba(5, 11, 20, 0.3) 34%, transparent 60%),
+    linear-gradient(to bottom, rgba(5, 11, 20, 0.8) 0%, rgba(5, 11, 20, 0.15) 26%, transparent 46%);
 }
 
-/* The arch curve: a true dome, not a pill. */
-.hero-arch {
-  transform-style: preserve-3d;
-}
-
-/* On desktop the arch is sized from the viewport, not from its 4:5 ratio.
-   Left to the ratio, a 592px column produced a 740px-tall frame and pushed the
-   hero to 1016px at 1366x768. This reserves the real budget: viewport minus
-   header, the bottom stats strip and the paddings, clamped so it stays
-   arch-shaped on very tall screens. Below lg the element is left to the 4:5 /
-   16:13 aspect classes and is free to scroll, as the spec allows. */
-@media (min-width: 1024px) {
-  .hero-arch {
-    height: clamp(20rem, calc(100svh - var(--header-height) - 13rem), 42rem);
+/* Below the two-column breakpoint the copy spans the width, so the washes
+   have to come up to meet it or the line lengths lose their contrast. */
+@media (max-width: 1023px) {
+  .hero-photo-scrim {
+    background:
+      linear-gradient(
+        to right,
+        rgba(5, 11, 20, 0.92) 0%,
+        rgba(5, 11, 20, 0.74) 55%,
+        rgba(5, 11, 20, 0.6) 100%
+      ),
+      linear-gradient(to top, rgba(5, 11, 20, 0.95) 0%, rgba(5, 11, 20, 0.3) 34%, transparent 60%),
+      linear-gradient(to bottom, rgba(5, 11, 20, 0.8) 0%, rgba(5, 11, 20, 0.15) 26%, transparent 46%);
   }
 }
 

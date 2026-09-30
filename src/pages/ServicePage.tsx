@@ -26,11 +26,20 @@ export const ServicePage: React.FC<ServicePageProps> = ({ service, onNavigate })
         onNavigate={onNavigate}
       />
 
-      {/* OVERVIEW & HIGHLIGHTS */}
+      {/* OVERVIEW & HIGHLIGHTS — photograph on the left, capabilities on the right */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-5xl mx-auto space-y-12 relative z-10">
-          
-          <div className="solar-glass-card p-8 sm:p-12 rounded-2xl space-y-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center relative z-10">
+          <div className="lg:col-span-4">
+            <div className="rounded-2xl overflow-hidden shadow-md solar-glass-card p-2">
+              <img
+                src={service.img}
+                alt={service.title}
+                className="w-full h-80 sm:h-96 object-cover rounded-xl"
+              />
+            </div>
+          </div>
+
+          <div className="lg:col-span-8 solar-glass-card p-8 sm:p-12 rounded-2xl space-y-6">
             <div className="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-semibold">
               Technical Capabilities
             </div>
@@ -72,11 +81,10 @@ export const ServicePage: React.FC<ServicePageProps> = ({ service, onNavigate })
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* OTHER PRODUCTS AND SERVICES (Split) */}
+      {/* OTHER PRODUCTS AND SERVICES */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50/70 border-y border-slate-200/60 relative overflow-hidden">
         {/* Subtle Background SVG Accents */}
         <div className="absolute inset-0 pointer-events-none opacity-20" aria-hidden="true">
@@ -86,19 +94,8 @@ export const ServicePage: React.FC<ServicePageProps> = ({ service, onNavigate })
           </svg>
         </div>
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
-          
-          <div className="lg:col-span-6">
-            <div className="rounded-2xl overflow-hidden shadow-md solar-glass-card p-2">
-              <img
-                src={service.img}
-                alt={service.title}
-                className="w-full h-80 sm:h-96 object-cover rounded-xl"
-              />
-            </div>
-          </div>
-
-          <div className="lg:col-span-6 space-y-6">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="space-y-6 max-w-3xl">
             <span className="text-xs font-semibold tracking-wider uppercase text-sky-600 font-sans">
               Our Services
             </span>
@@ -122,7 +119,6 @@ export const ServicePage: React.FC<ServicePageProps> = ({ service, onNavigate })
               ))}
             </div>
           </div>
-
         </div>
       </section>
 

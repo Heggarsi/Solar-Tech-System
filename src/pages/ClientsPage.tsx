@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageHero } from '../components/PageHero';
-import { TESTIMONIALS, SITE_INFO } from '../data/siteData';
+import { SITE_INFO } from '../data/siteData';
 
 interface ClientsPageProps {
   onNavigate: (path: string) => void;
@@ -74,64 +74,6 @@ export const ClientsPage: React.FC<ClientsPageProps> = ({ onNavigate }) => {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* TESTIMONIALS SECTION */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50/70 border-y border-slate-200/60 relative overflow-hidden">
-        {/* Subtle Background Waves SVG */}
-        <div className="absolute inset-0 pointer-events-none opacity-20" aria-hidden="true">
-          <svg className="w-full h-full" viewBox="0 0 1200 400" preserveAspectRatio="none">
-            <path d="M0,200 C300,50 600,350 900,100 T1200,200" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="8 6" />
-            <path d="M0,250 C300,100 600,400 900,150 T1200,250" fill="none" stroke="#fb7185" strokeWidth="1.2" strokeDasharray="6 8" />
-          </svg>
-        </div>
-
-        <div className="max-w-5xl mx-auto space-y-12 relative z-10">
-          
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-semibold tracking-wider uppercase text-rose-600 font-sans">
-              Client Testimonials
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-              Customer Feedback &amp; Shared Experiences
-            </h2>
-            <div className="w-12 h-1 bg-gradient-to-r from-rose-400 to-sky-400 mx-auto rounded-full" />
-            <p className="text-sm sm:text-base text-slate-600">
-              A few words from the businesses and homeowners we have worked with across Karnataka.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {TESTIMONIALS.map((t, idx) => (
-              <div
-                key={idx}
-                className="solar-glass-card p-8 rounded-2xl flex flex-col justify-between space-y-6 transition-all"
-              >
-                <div className="space-y-3">
-                  <div className="text-xs font-bold text-emerald-700 uppercase tracking-wider">
-                    Verified Project Delivery
-                  </div>
-                  <blockquote className="text-sm sm:text-base text-slate-700 italic leading-relaxed">
-                    "{t.quote}"
-                  </blockquote>
-                </div>
-
-                <div className="flex items-center gap-3.5 pt-4 border-t border-slate-100">
-                  <img
-                    src={t.avatar}
-                    alt={t.name}
-                    className="w-12 h-12 rounded-full border border-slate-200"
-                  />
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-900">{t.name}</h4>
-                    <p className="text-xs text-slate-500">{t.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
         </div>
       </section>
 

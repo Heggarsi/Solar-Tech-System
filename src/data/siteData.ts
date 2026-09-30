@@ -14,7 +14,7 @@ export const SITE_INFO = {
   mapLink: 'https://www.google.com/maps/search/?api=1&query=Bangalore%2C%20Karnataka%2C%20India',
   establishedYear: '2016',
   incorporationHistory: 'Incorporated in 2011, establishing ourselves as a leading supplier of quality assured range of solar products and turnkey power infrastructure across Karnataka.',
-  designerCredit: 'Designed By Taarruni'
+  designerCredit: 'Taarruni'
 };
 
 export const SERVICES: ServiceItem[] = [

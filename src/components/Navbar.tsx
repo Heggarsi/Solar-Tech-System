@@ -286,12 +286,15 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = 'home' }) => {
               className="flex items-center gap-3"
               aria-label="Solar Tech Systems — home"
             >
+              {/* The mark is a dark plate, so it needs the same white holder
+                  the footer gives it — lighter and frosted here so the header
+                  stays airy over the hero photograph. */}
               <img
                 src="/images/logo.png"
                 alt="Solar Tech Systems"
                 width={160}
                 height={48}
-                className="w-auto object-contain transition-all duration-500"
+                className="w-auto rounded-lg border border-white/25 bg-white/75 object-contain px-2 py-1 shadow-[0_6px_20px_-10px_rgba(0,0,0,0.7)] backdrop-blur-md transition-all duration-500"
                 style={{ height: isScrolled ? 34 : 44 }}
               />
             </a>
@@ -318,21 +321,18 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = 'home' }) => {
                     </button>
 
                     {servicesOpen ? (
-                      <div className="absolute left-0 top-full w-80 pt-3">
+                      <div className="absolute left-0 top-full w-64 pt-3">
+                        {/* Titles only: the one-line items keep the panel
+                            compact enough to scan without opening it. */}
                         <div className="rounded-xl border border-white/10 bg-ink-900/95 p-2 shadow-2xl backdrop-blur-xl">
                           {SERVICES.map((s) => (
                             <a
                               key={s.slug}
                               href={s.file}
                               onClick={(e) => handleNav(e, s.file)}
-                              className="block rounded-lg p-3 transition-colors hover:bg-white/5"
+                              className="block rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/5"
                             >
-                              <span className="block text-sm font-medium text-white">
-                                {s.title}
-                              </span>
-                              <span className="mt-0.5 block text-xs leading-relaxed text-dawn-200/60">
-                                {s.desc}
-                              </span>
+                              {s.title}
                             </a>
                           ))}
                         </div>

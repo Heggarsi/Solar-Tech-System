@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Solar Tech Systems">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0A1524" />
+      <stop offset="100%" stop-color="#050B14" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFD98A" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#FF9F1C" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="url(#sky)" />
+  <circle cx="32" cy="27" r="19" fill="url(#glow)" />
+  <circle cx="32" cy="27" r="9" fill="#FFC24D" />
+  <g stroke="#FF6B35" stroke-width="2.4" stroke-linecap="round">
+    <path d="M32 6v6" />
+    <path d="M32 42v6" />
+    <path d="M11 27h6" />
+    <path d="M47 27h6" />
+    <path d="M17 12l4.2 4.2" />
+    <path d="M42.8 37.8 47 42" />
+    <path d="M47 12l-4.2 4.2" />
+    <path d="M21.2 37.8 17 42" />
+  </g>
+  <rect x="14" y="50" width="36" height="3" rx="1.5" fill="#6FB7FF" opacity="0.7" />
+</svg>

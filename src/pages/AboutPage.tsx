@@ -22,20 +22,32 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         onNavigate={onNavigate}
       />
 
-      {/* OVERVIEW PROSE SECTION */}
+      {/* OVERVIEW PROSE SECTION — photograph on the left, prose on the right */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-4xl mx-auto solar-glass-card p-8 sm:p-12 rounded-2xl space-y-6 relative z-10">
-          <div className="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-semibold">
-            Company Overview &amp; Heritage
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center relative z-10">
+          <div className="lg:col-span-5">
+            <div className="rounded-2xl overflow-hidden shadow-md solar-glass-card p-2">
+              <img
+                src="/images/hero-slider.png"
+                alt="Solar Tech Systems solar installation"
+                className="w-full h-auto object-cover rounded-xl"
+              />
+            </div>
           </div>
 
-          <p className="text-base sm:text-lg text-slate-700 leading-relaxed">
-            Solar Tech Systems, incorporated in the year 2011 have established ourselves as a leading supplier of quality assured range of solar products such as Solar Power Fencing, Solar Street Lights, Solar Water Heaters, Solar Irrigation Pump, Solar Power Plant and Roof structures etc. All these products are designed by our well-trained professionals using high grade material in accordance with the industry standards. We are the market leaders in delivering high quality technology Solar Products and Service to our esteemed clients pan Karnataka.
-          </p>
+          <div className="lg:col-span-7 solar-glass-card p-8 sm:p-12 rounded-2xl space-y-6">
+            <div className="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-semibold">
+              Company Overview &amp; Heritage
+            </div>
 
-          <p className="text-base sm:text-lg text-slate-700 leading-relaxed">
-            Solar Tech Systems, incorporated in the year 2016 have established ourselves as a leading supplier of quality assured range of solar products.
-          </p>
+            <p className="text-base sm:text-lg text-slate-700 leading-relaxed">
+              Solar Tech Systems, incorporated in the year 2011 have established ourselves as a leading supplier of quality assured range of solar products such as Solar Power Fencing, Solar Street Lights, Solar Water Heaters, Solar Irrigation Pump, Solar Power Plant and Roof structures etc. All these products are designed by our well-trained professionals using high grade material in accordance with the industry standards. We are the market leaders in delivering high quality technology Solar Products and Service to our esteemed clients pan Karnataka.
+            </p>
+
+            <p className="text-base sm:text-lg text-slate-700 leading-relaxed">
+              Solar Tech Systems, incorporated in the year 2016 have established ourselves as a leading supplier of quality assured range of solar products.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -49,18 +61,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           </svg>
         </div>
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
-          <div className="lg:col-span-6">
-            <div className="rounded-2xl overflow-hidden shadow-md solar-glass-card p-2">
-              <img
-                src="/images/hero-slider.png"
-                alt="Solar Tech Systems solar installation"
-                className="w-full h-auto object-cover rounded-xl"
-              />
-            </div>
-          </div>
-
-          <div className="lg:col-span-6 space-y-6">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="space-y-6 max-w-3xl">
             <span className="text-xs font-semibold tracking-wider uppercase text-rose-600 font-sans">
               What We Do
             </span>

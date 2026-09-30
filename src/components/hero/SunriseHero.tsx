@@ -1,7 +1,7 @@
 import React, { useRef, type ReactNode } from 'react';
 import { InlineCounter } from '../motion/AnimatedCounter';
 import { useGsapContext } from '../../hooks/useGsapContext';
-import { useHeaderHeight, useHeroFx, useMagneticCap, followPointer } from './heroUtils';
+import { useHeaderHeight, useHeroFx, useMagneticCap } from './heroUtils';
 import { gsap } from '../../lib/motion/gsap';
 
 interface HeroCtaProps {
@@ -49,16 +49,18 @@ interface SunriseHeroProps {
 /**
  * HERO — "Sunrise over the array".
  *
- * Split layout: message on the left, one real project photograph in an arch
- * frame on the right, stats anchored to a strip along the bottom.
+ * One full-bleed project photograph sits behind the whole section as its
+ * backdrop; the message is layered over it on the left, with the stats
+ * anchored to a strip along the bottom. The photograph carries a navy scrim so
+ * the copy and the header keep their contrast whatever the image is doing.
  *
  * Everything decorative here is aria-hidden and pointer-events-none. All motion
- * is transform/opacity/clip-path only, lives in one gsap.context() via
- * useGsapContext, and is skipped entirely under prefers-reduced-motion.
+ * is transform/opacity only, lives in one gsap.context() via useGsapContext,
+ * and is skipped entirely under prefers-reduced-motion.
  */
 export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
   const rootRef = useRef<HTMLElement>(null);
-  const { reduced, canScrub, canHover } = useHeroFx();
+  const { reduced, canScrub } = useHeroFx();
   useHeaderHeight();
 
   useGsapContext(
@@ -75,7 +77,8 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
           { clearProps: 'all', opacity: 1, x: 0, y: 0, rotate: 0, clipPath: 'none' },
         );
         gsap.set(q('[data-line-inner]'), { yPercent: 0 });
-        gsap.set(q('[data-arch-clip]'), { clipPath: 'inset(0% 0% 0% 0%)' });
+        gsap.set(q('[data-hero-bg]'), { clearProps: 'all', opacity: 1, scale: 1 });
+        gsap.set(q('[data-hero-bg-img]'), { clearProps: 'all', scale: 1 });
         return;
       }
 
@@ -103,27 +106,20 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
           { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', stagger: 0.08 },
           0.6,
         )
-        // 4. Arch: clip from the bottom up while the photo settles from 1.15.
+        // 4. Backdrop: fade the frame in while the photograph settles.
         .fromTo(
-          q('[data-arch-clip]'),
-          { clipPath: 'inset(100% 0% 0% 0%)' },
-          { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'power3.inOut' },
-          0.3,
+          q('[data-hero-bg]'),
+          { opacity: 0, scale: 1.06 },
+          { opacity: 1, scale: 1, duration: 1.2, ease: 'power2.out' },
+          0,
         )
         .fromTo(
-          q('[data-arch-img]'),
-          { scale: 1.15 },
-          { scale: 1, duration: 1.2, ease: 'power3.out' },
-          0.3,
+          q('[data-hero-bg-img]'),
+          { scale: 1.12 },
+          { scale: 1, duration: 1.8, ease: 'power3.out' },
+          0,
         )
-        // 5. Floating cards.
-        .fromTo(
-          q('[data-float-card]'),
-          { opacity: 0, scale: 0.9 },
-          { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.7)' },
-          1,
-        )
-        // 6. Stats strip, then the counters count up via InlineCounter.
+        // 5. Stats strip, then the counters count up via InlineCounter.
         .fromTo(
           q('[data-stats]'),
           { opacity: 0, y: 20 },
@@ -131,16 +127,15 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
           1.2,
         );
 
-      // Cards drift forever, offset from each other and out of phase.
-      q('[data-float-card]').forEach((card, i) => {
-        gsap.to(card, {
-          y: i === 0 ? -8 : 8,
-          duration: i === 0 ? 4.2 : 5.4,
-          ease: 'sine.inOut',
-          repeat: -1,
-          yoyo: true,
-          delay: i * 0.6,
-        });
+      // The photograph breathes forever, drifting only a few percent so no
+      // edge of the frame is ever exposed.
+      gsap.to(q('[data-hero-bg-img]'), {
+        scale: 1.06,
+        duration: 18,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        delay: 1.8,
       });
 
       // Scroll cue micro-loop.
@@ -165,9 +160,9 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
         });
 
         st.fromTo(
-          q('[data-arch-img]'),
+          q('[data-hero-bg]'),
           { yPercent: 0 },
-          { yPercent: -6, ease: 'none', duration: 1 },
+          { yPercent: -5, ease: 'none', duration: 1 },
           0,
         )
           .fromTo(
@@ -175,30 +170,10 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
             { y: 0, opacity: 1 },
             { y: -30, opacity: 0.35, ease: 'none', duration: 1 },
             0,
-          )
-          // Cards separate as the hero leaves.
-          .to(q('[data-float-card]'), { y: '+=6', ease: 'none', duration: 1 }, 0);
-      }
-
-      // ---- Pointer interactions, fine pointer only. ---------------------
-      if (canHover) {
-        const arch = root.querySelector<HTMLElement>('[data-arch]');
-
-        const stopArch = followPointer(arch!, {
-          max: 40,
-          enabled: true,
-          onMove: (dx, dy) => {
-            // Up to 3 degrees of tilt, as specified.
-            gsap.to(arch, { rotateY: (dx / 40) * 3, rotateX: (-dy / 40) * 3, duration: 0.5, ease: 'power2.out' });
-          },
-        });
-
-        return () => {
-          stopArch();
-        };
+          );
       }
     },
-    { dependencies: [reduced, canScrub, canHover] },
+    { dependencies: [reduced, canScrub] },
     rootRef,
   );
 
@@ -209,17 +184,36 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
       aria-labelledby="hero-heading"
       className="hero relative isolate flex w-full flex-col overflow-hidden"
     >
-      {/* ---------- background: navy gradient + blueprint, edge-masked ---- */}
+      {/* ---------- background: the photograph, then its scrims ---------- */}
+      {/* The frame is deliberately taller than the section so the scrubbed
+          parallax can travel without ever exposing an edge. */}
+      <div
+        data-hero-bg
+        className="pointer-events-none absolute inset-x-0 -top-[8%] -z-10 h-[116%] overflow-hidden"
+        aria-hidden="true"
+      >
+        <img
+          data-hero-bg-img
+          src="/images/hero_clean_tech.jpg"
+          alt=""
+          width={1376}
+          height={768}
+          fetchPriority="high"
+          decoding="async"
+          className="block h-full w-full object-cover will-change-transform"
+        />
+      </div>
+      {/* Navy scrims: strongest under the header and the copy on the left,
+          lifting toward the right so the photograph still reads as a photo. */}
+      <div className="hero-photo-scrim pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
       <div className="hero-bg pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
       <div className="hero-grid pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
-      {/* Warm radial bloom behind the arch, lighting the photograph's top edge. */}
-      <div className="hero-bloom pointer-events-none absolute -z-10" aria-hidden="true" />
 
       {/* ---------- content --------------------------------------------- */}
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-5 sm:px-6 lg:px-8">
-        <div className="grid flex-1 grid-cols-1 items-center gap-10 pt-[calc(var(--header-height,5.5rem)+1.5rem)] pb-6 lg:grid-cols-12 lg:gap-8 lg:pb-4">
-          {/* LEFT: message, cols 1-6 */}
-          <div className="hero-copy flex flex-col items-start lg:col-span-6">
+        <div className="flex flex-1 flex-col items-start justify-center pt-[calc(var(--header-height,5.5rem)+1.5rem)] pb-6 lg:pb-4">
+          {/* The message */}
+          <div data-hero-copy className="hero-copy flex w-full max-w-3xl flex-col items-start">
             {/* Eyebrow */}
             <p
               data-eyebrow
@@ -233,9 +227,9 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
             {/* H1 — the only h1 on the page.
                 The cap is 2.5rem (40px) rather than 5rem on purpose: measured
                 in-browser, anything above 40px pushes "Powering a Sustainable
-                Future" onto a third line inside a 6-column split, and the
-                oversized value also pushed the hero past one viewport at
-                1366x768. Two lines and one screen win over the larger type. */}
+                Future" onto a third line, and the oversized value also pushed
+                the hero past one viewport at 1366x768. Two lines and one
+                screen win over the larger type. */}
             <h1
               id="hero-heading"
               className="mt-5 font-display font-bold leading-[1.05] tracking-[-0.02em] text-white"
@@ -311,113 +305,6 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
               ISO Certified · Solar &amp; Power EPC
             </p>
           </div>
-
-          {/* RIGHT: the photograph in an arch frame, cols 7-12 */}
-          <div className="relative flex w-full justify-center lg:col-span-6">
-            <div
-              data-arch
-              className="hero-arch relative w-full max-w-[26rem] lg:max-w-none"
-              style={{ perspective: '1000px' }}
-            >
-              {/* The arch's own border picks up the warm edge of the photo
-                  below it; the frame no longer has a sun behind it. */}
-              <div
-                data-arch-clip
-                className="relative h-full w-full overflow-hidden rounded-t-[999px] rounded-b-2xl border border-sun-400/25 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.85)]"
-              >
-                <picture>
-                  <source
-                    type="image/avif"
-                    srcSet="/images/hero-array-640.avif 640w, /images/hero-array-1024.avif 1024w, /images/hero-array-1600.avif 1600w"
-                    sizes="(min-width: 1024px) 46vw, (min-width: 640px) 80vw, 100vw"
-                  />
-                  <source
-                    type="image/webp"
-                    srcSet="/images/hero-array-640.webp 640w, /images/hero-array-1024.webp 1024w, /images/hero-array-1600.webp 1600w"
-                    sizes="(min-width: 1024px) 46vw, (min-width: 640px) 80vw, 100vw"
-                  />
-                  {/* Original JPEG is the fallback. 478 kB; the AVIF at the
-                      same width is 180 kB and the 640w variant is 28.5 kB. */}
-                  <img
-                    data-arch-img
-                    src="/images/service-solar-power-plant.jpg"
-                    alt="Rooftop solar power plant installed by Solar Tech Systems"
-                    width={1600}
-                    height={901}
-                    fetchPriority="high"
-                    decoding="async"
-                    className="block aspect-[4/5] h-full w-full object-cover will-change-transform sm:aspect-[16/13] lg:aspect-auto"
-                  />
-                </picture>
-                {/* Navy scrim so the floating cards stay legible over any photo */}
-                <div
-                  className="pointer-events-none absolute inset-0"
-                  aria-hidden="true"
-                  style={{
-                    background:
-                      'linear-gradient(to top, rgba(5,11,20,0.92) 0%, rgba(5,11,20,0.35) 32%, transparent 62%)',
-                  }}
-                />
-                <div
-                  className="pointer-events-none absolute inset-0"
-                  aria-hidden="true"
-                  style={{
-                    background:
-                      'radial-gradient(120% 80% at 50% 0%, rgba(255,194,77,0.10) 0%, transparent 55%)',
-                  }}
-                />
-              </div>
-
-              {/* Floating card: top-left, overlapping the frame edge.
-                  Visible on every breakpoint — the spec keeps exactly one
-                  card on mobile, so this is the survivor and the second is
-                  hidden below sm. */}
-              <div
-                data-float-card
-                data-hero-anim
-                className="absolute left-0 top-[14%] w-[12rem] rounded-xl border border-white/12 bg-ink-900/95 p-3 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.9)] sm:top-[18%] sm:w-[13.5rem] sm:p-3.5 lg:-left-6"
-              >
-                <div className="flex items-center gap-2.5">
-                  <svg
-                    className="h-4 w-4 shrink-0 text-sun-400"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    aria-hidden="true"
-                  >
-                    <path d="M13 2L4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z" strokeLinejoin="round" />
-                  </svg>
-                  <p className="text-[0.8rem] font-semibold leading-tight text-white">
-                    33 kV Grid Substation EPC
-                  </p>
-                </div>
-              </div>
-
-              {/* Floating card: bottom-right, offset in the opposite direction */}
-              <div
-                data-float-card
-                data-hero-anim
-                className="absolute bottom-[12%] right-0 hidden w-[12.5rem] rounded-xl border border-white/12 bg-ink-900/95 p-3.5 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.9)] sm:block lg:-right-4"              >
-                <div className="flex items-center gap-2.5">
-                  <svg
-                    className="h-4 w-4 shrink-0 text-sky-400"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    aria-hidden="true"
-                  >
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 7v5l3.5 2" strokeLinecap="round" />
-                  </svg>
-                  <p className="text-[0.8rem] font-semibold leading-tight text-white">
-                    Since 2016 · Bangalore
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* ---------- stats strip: anchored, never overlapping -------------- */}
@@ -464,10 +351,10 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
 
           {/* Scroll hint: far right of the strip, own column, cannot collide */}
           <a
-            href="#brief"
+            href="#about"
             onClick={(e) => {
               e.preventDefault();
-              onNavigate('#brief');
+              onNavigate('#about');
             }}
             aria-label="Scroll to next section"
             className="group relative hidden h-11 w-6 shrink-0 items-center justify-center sm:flex"

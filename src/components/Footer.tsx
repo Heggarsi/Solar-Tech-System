@@ -9,9 +9,13 @@ import { ROUTES, SERVICES, SITE_INFO } from '../content/site';
  * Footer with the giant masked CTA, staggered content, and the sun "set" into
  * a warm horizon with heat shimmer behind it.
  *
+ * `showCta` drives the giant "Let's power what's next." band at the top. The
+ * inner pages each end with their own dark CTA band, so the footer band is
+ * redundant there and the route decides whether it renders.
+ *
  * Every link, phone number and email that ships today is preserved.
  */
-export const Footer: React.FC = () => {
+export const Footer: React.FC<{ showCta?: boolean }> = ({ showCta = true }) => {
   const navigate = useSiteNav();
 
   const handle = (e: React.MouseEvent, path: string) => {
@@ -37,24 +41,26 @@ export const Footer: React.FC = () => {
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Giant CTA */}
-        <div className="border-b border-white/10 py-20 sm:py-28">
-          <RevealText
-            as="h2"
-            lines={["Let's power", "what's next."]}
-            className="font-display text-[clamp(2.75rem,9vw,7rem)] font-bold leading-[0.92] tracking-tight text-white"
-          />
-          <Reveal delay={0.15} className="mt-8 flex flex-wrap items-center gap-4">
-            <MagneticButton href={ROUTES.contact} onClick={(e) => handle(e, ROUTES.contact)}>
-              Get a Free Quote
-            </MagneticButton>
-            <MagneticButton
-              variant="ghost"
-              href={`tel:${SITE_INFO.phoneHref.replace('tel:', '')}`}
-            >
-              {SITE_INFO.phone}
-            </MagneticButton>
-          </Reveal>
-        </div>
+        {showCta && (
+          <div className="border-b border-white/10 py-20 sm:py-28">
+            <RevealText
+              as="h2"
+              lines={["Let's power", "what's next."]}
+              className="font-display text-[clamp(2.75rem,9vw,7rem)] font-bold leading-[0.92] tracking-tight text-white"
+            />
+            <Reveal delay={0.15} className="mt-8 flex flex-wrap items-center gap-4">
+              <MagneticButton href={ROUTES.contact} onClick={(e) => handle(e, ROUTES.contact)}>
+                Get a Free Quote
+              </MagneticButton>
+              <MagneticButton
+                variant="ghost"
+                href={`tel:${SITE_INFO.phoneHref.replace('tel:', '')}`}
+              >
+                {SITE_INFO.phone}
+              </MagneticButton>
+            </Reveal>
+          </div>
+        )}
 
         {/* Footer columns */}
         <div className="grid grid-cols-1 gap-10 border-b border-white/10 py-14 md:grid-cols-2 lg:grid-cols-12 lg:gap-12">
