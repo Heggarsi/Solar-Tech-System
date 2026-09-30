@@ -88,7 +88,7 @@ export const LEGACY_REDIRECTS: ReadonlyArray<readonly [string, string]> = [
   ['/33-11kv-substation-uss.html', '33-11kv-substation-uss'],
 ];
 
-export interface NavLink {
+interface NavLink {
   label: string;
   /** null = plain route, otherwise a service file */
   path: string | null;
@@ -158,117 +158,12 @@ export const HOME_STATS: Stat[] = [
 // ---------------------------------------------------------------------------
 // How solar works — energy flow stages (educational copy, no claims)
 // ---------------------------------------------------------------------------
-export interface FlowStage {
-  id: string;
-  title: string;
-  caption: string;
-  node: string;
-}
 
-export const ENERGY_FLOW: FlowStage[] = [
-  {
-    id: 'sun',
-    title: 'Solar irradiance',
-    caption:
-      'Photovoltaic modules convert incoming sunlight directly into electrical current through the photovoltaic effect, with no moving parts and no fuel.',
-    node: 'Sun',
-  },
-  {
-    id: 'panel',
-    title: 'DC generation',
-    caption:
-      'Cells are strung into strings and combined in DC combiner boxes. String-level monitoring isolates shading and soiling losses from the rest of the array.',
-    node: 'Solar Panel',
-  },
-  {
-    id: 'inverter',
-    title: 'Inversion',
-    caption:
-      'Inverters convert the panel DC output into grid-compatible AC using maximum power point tracking, which keeps the array at its theoretical peak as light changes.',
-    node: 'Inverter',
-  },
-  {
-    id: 'ac',
-    title: 'AC distribution',
-    caption:
-      'A protected AC line carries power through switchgear, protection relays and metering to the consumer or out to the distribution network.',
-    node: 'AC Line',
-  },
-  {
-    id: 'grid',
-    title: 'Grid & load',
-    caption:
-      'Power serves the site load first, with surplus exported under net metering arrangements. Remote monitoring keeps the whole chain visible.',
-    node: 'Building / Grid',
-  },
-];
-
-// ---------------------------------------------------------------------------
-// Engineering capability (mirrors existing service content — no new claims)
-// ---------------------------------------------------------------------------
-export interface Capability {
-  title: string;
-  text: string;
-  image: string;
-}
-
-export const CAPABILITIES: Capability[] = [
-  {
-    title: 'Galvanised steel poles',
-    text: 'Hot-dip galvanised structural poles manufactured for outdoor service, built to resist corrosion across Karnataka’s monsoon and coastal conditions.',
-    image: '/images/service-33kv-transmission-line.jpg',
-  },
-  {
-    title: 'Transmission monopoles',
-    text: 'Monopoles for power transmission and distribution, engineered for line routing, span control and statutory ground clearance.',
-    image: '/images/IMG-20251014-WA0086-1.jpg',
-  },
-  {
-    title: 'High masts & stadium masts',
-    text: 'High masts and stadium mast structures with engineered mounting solutions and luminaire integration.',
-    image: '/images/IMG-20251014-WA0085.jpg',
-  },
-  {
-    title: 'Luminaires & engineered solutions',
-    text: 'Lighting hardware and engineered structural solutions supplied alongside the civil and electrical scope.',
-    image: '/images/IMG-20251014-WA0081.jpg',
-  },
-];
-
-// ---------------------------------------------------------------------------
-// Milestones for the About timeline
-// ---------------------------------------------------------------------------
-/**
- * The existing site states two different incorporation years:
- *   SITE_INFO.establishedYear .......... '2016'
- *   SITE_INFO.incorporationHistory ..... 'Incorporated in 2011, ...'
- *   Footer copy ....................... 'incorporated in the year 2016'
- * Both are preserved verbatim in their original components. The timeline below
- * only uses 2016 (the year repeated across the site).
- * TODO: confirm with client — which is the correct incorporation year, 2011 or 2016?
- */
-export const MILESTONES = [
-  {
-    year: '2016',
-    title: 'Incorporated',
-    text: SITE_INFO.incorporationHistory,
-  },
-  {
-    year: '2016',
-    title: 'Solar product supply',
-    text: 'Established as a supplier of a quality assured range of solar products across Karnataka.',
-  },
-  {
-    year: 'Ongoing',
-    title: 'Turnkey power infrastructure',
-    text: 'Delivered solar power plants, rooftop systems, 33 kV transmission lines and 33/11 kV substations as integrated scopes.',
-  },
-];
 
 // ---------------------------------------------------------------------------
 // SEO — per route
 // ---------------------------------------------------------------------------
-export interface RouteMeta {
+interface RouteMeta {
   title: string;
   description: string;
 }

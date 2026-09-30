@@ -29,12 +29,6 @@ export const PARALLAX = {
   fg: 0.5,
 } as const;
 
-export const CARD_HOVER = {
-  lift: -8,
-  imageScale: 1.06,
-  arrowShift: 8,
-} as const;
-
 export const PAGE_TRANSITION = {
   out: 0.35,
   in: 0.5,

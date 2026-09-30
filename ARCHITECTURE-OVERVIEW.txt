@@ -15,7 +15,7 @@ single Lenis instance.
 
 react 19.3.0  (npm: react / react-dom)
   WHAT:      The component model. Everything renders through it.
-  WHERE:     46 of the 46 .ts/.tsx files in src/ import from 'react'.
+  WHERE:     34 of the 41 .ts/.tsx files in src/ import from 'react'.
   ENTRY:     src/main.tsx            -> createRoot + StrictMode
              src/App.tsx             -> <BrowserRouter>, the route table, and
                                           the withNav() adapter that keeps every
@@ -48,19 +48,16 @@ gsap 3.15.0
   WHERE:     Registered and re-exported in exactly one place:
                src/lib/motion/gsap.ts      -> the ONLY `import { gsap } from
                                                'gsap'` in the app
-             Consumed through that module by 21 files:
-               src/lib/motion/gsap.ts, lenis.ts
+             Consumed through that module by 14 files:
+               src/lib/motion/gsap.ts
                src/hooks/useGsapContext.ts
                src/components/Layout.tsx, Navbar.tsx, SunLayer.tsx
                src/components/hero/SunriseHero.tsx
-               src/components/svg/EnergyFlow.tsx
-               src/components/3d/SolarScene.tsx
                src/components/motion/  -> AnimatedCounter, CustomCursor,
                                           HorizontalScroll, ImageReveal,
-                                          PageTransition, Parallax,
-                                          PinnedSection, RaysLoader, Reveal,
-                                          RevealText, ScrollProgress,
-                                          SectionIndicator
+                                          PageTransition,
+                                          RaysLoader, Reveal, RevealText,
+                                          ScrollProgress
   API USED:  gsap.set (18), gsap.to (17), gsap.ticker (8), gsap.timeline (7),
              gsap.fromTo (7), gsap.context (4), gsap.utils.selector (2),
              gsap.TweenVars / gsap.core (types only)
@@ -77,7 +74,6 @@ gsap/ScrollTrigger
                                                      every pathname change
                src/components/SunLayer.tsx      -> master scrub trigger on <html>
                src/components/motion/ScrollProgress.tsx
-               src/components/motion/SectionIndicator.tsx
                src/components/motion/PageTransition.tsx -> refresh on settle
                src/lib/motion/lenis.ts          -> lenis.on('scroll',
                                                      ScrollTrigger.update)
@@ -99,16 +95,13 @@ gsap/CustomEase
              reverts everything on unmount. This is the mechanism that makes the
              app leak-free under StrictMode double-mounting.
   WHERE:     src/lib/motion/gsap.ts (register + re-export), then wrapped by
-                 src/hooks/useGsapContext.ts -> useGsapContext(), the hook 14
+                 src/hooks/useGsapContext.ts -> useGsapContext(), the hook 9
                components actually call:
                  components/SunLayer.tsx
                  components/hero/SunriseHero.tsx, heroUtils.ts
-                 components/svg/EnergyFlow.tsx (uses useGSAP directly)
-                 components/3d/SolarScene.tsx (uses useGSAP directly)
                  components/motion/Reveal, RevealText, AnimatedCounter,
-                                    ImageReveal, HorizontalScroll, Parallax,
-                                    PinnedSection, ScrollProgress,
-                                    SectionIndicator
+                                    ImageReveal, HorizontalScroll,
+                                    ScrollProgress
   NOT USED:  components/Navbar.tsx, components/motion/PageTransition.tsx,
              CustomCursor.tsx and RaysLoader.tsx drive plain gsap timelines in
              useEffect with an explicit kill in the cleanup instead.
@@ -136,50 +129,17 @@ tailwindcss 4.3.3  +  @tailwindcss/vite 4.3.3
   WHERE:     @tailwindcss/vite is a Vite plugin in vite.config.ts:12.
              tailwindcss itself is imported in exactly one place:
                src/index.css:1   -> @import "tailwindcss";
-             src/index.css (1291 lines) then holds @theme at line 89 (the
-             blue / rose / slate / ink / sun token scales) and 17 @keyframes
-             blocks (slowDrift, sun-rotate, hero-sun-spin, hero-mote-drift,
-             floatWave, pulseGlow, shimmer-drift, ...). Components consume the
-             tokens as classes, e.g. bg-ink-950, text-dawn-200, font-display.
+             src/index.css then holds the @theme block (the blue / rose /
+             slate / ink / sun token scales) and the @keyframes blocks
+             (sun-rotate, hero-sun-spin, hero-mote-drift, shimmer-drift, ...).
+             Components consume the tokens as classes, e.g. bg-ink-950,
+             text-dawn-200, font-display.
              Motion-side custom properties written by GSAP (--sky-top, --sun-x,
              --sun-glow-strength, --hero-sun-x/y) are also declared here and are
              what makes the sun render with JavaScript disabled.
 
 --------------------------------------------------------------------------------
-2. WEBGL LIBRARIES — PRESENT AND FULLY IMPLEMENTED, BUT NOT CURRENTLY MOUNTED
---------------------------------------------------------------------------------
-
-three 0.186.1  +  @react-three/fiber 9.8.1  +  @types/three 0.186.0
-  WHAT:      A declarative WebGL hero scene: a sun orb rising over an instanced
-             solar array with energy particles travelling to the grid.
-  WHERE:     Exactly 4 files, all in one folder:
-               src/components/3d/SolarScene.tsx    -> <Canvas>, useThree,
-                                                      useGSAP; scrubs sun
-                                                      position, scale, light
-                                                      intensity and camera with
-                                                      ScrollTrigger; sets
-                                                      data-webgl="sun" on <html>
-                                                      so the CSS sun stands down
-               src/components/3d/SunOrb.tsx       -> sphere + additive corona
-                                                      + canvas-generated glow
-                                                      sprite, breathing in useFrame
-               src/components/3d/PanelArray.tsx   -> InstancedMesh panel grid
-               src/components/3d/EnergyParticles.tsx -> single THREE.Points cloud,
-                                                      positions rewritten per
-                                                      frame (no per-particle mesh)
-  STATUS:    src/components/3d/SolarScene.tsx is imported by NOTHING. The chain
-             is self-contained: SolarScene -> SunOrb/PanelArray/EnergyParticles,
-             and no other file reaches in. Confirmed by the build output — the
-             shipped bundle dist/assets/index-*.js contains no WebGLRenderer or
-             InstancedMesh code, so three and R3F are fully tree-shaken out.
-             src/lib/motion/utils.ts still exports canUseWebGL() and
-             getDeviceTier() to gate the scene if it is ever mounted.
-  TO MOUNT:  import { SolarScene } from './3d/SolarScene' in
-             src/components/hero/SunriseHero.tsx. The gating helpers it needs
-             already exist and index.css already honours [data-webgl="sun"].
-
---------------------------------------------------------------------------------
-3. DEV / BUILD TOOLCHAIN
+2. DEV / BUILD TOOLCHAIN
 --------------------------------------------------------------------------------
 
 vite 8.3.1  +  @vitejs/plugin-react 6.1.1
@@ -196,39 +156,12 @@ typescript 7.0.2
              "lint": "tsc --noEmit". There is no Babel and no transpile-only
              path: type errors fail the build.
 
-esbuild 0.28.2  /  tsx 4.23.15
-  Transitive/CLI helpers pinned as direct devDependencies. Neither is imported
-  by any file in src/ — esbuild does Vite's TS transform underneath, tsx is the
-  TypeScript-aware Node runner available for scripts. Neither appears in the
-  shipped bundle.
-
-autoprefixer 10.6.1
-  Declared but unused. Tailwind v4 ships Lightning CSS and does its own prefixing
-  internally, and there is no postcss.config.js in the project.
+esbuild 0.28.2
+  Vite's TypeScript transform runs on esbuild internally. It is not imported by
+  any file in src/ and does not appear in the shipped bundle.
 
 --------------------------------------------------------------------------------
-4. INSTALLED BUT ENTIRELY UNUSED (safe to remove from package.json)
---------------------------------------------------------------------------------
-
-These are listed under "dependencies" but nothing in src/ imports them. They add
-install weight and nothing to the bundle.
-
-  motion 12.43.0        the Framer Motion successor. src/lib/motion/ is a LOCAL
-                        FOLDER, not this package — grepping for it matches folder
-                        paths, not an import. All animation is GSAP. Note the
-                        name collision: the folder is src/lib/motion/.
-  lucide-react 0.546.0  icon set. Every icon in the app is hand-written inline
-                        SVG, e.g. the check mark in SunriseHero.tsx:424 and the
-                        two nav icons in Layout/SunriseHero.
-  @google/genai 2.24.0  Gemini SDK. metadata.json still declares
-                        "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API", but no source
-                        file imports it and there is no server file in the repo.
-  express 4.22.3        no Express server, no API routes, no node entry point.
-  dotenv 17.4.2         no .env file exists in the project; vite.config.ts reads
-                        process.env.DISABLE_HMR, which needs no dotenv.
-
---------------------------------------------------------------------------------
-5. THE IMPORT RULES THIS INVENTORY IMPLIES
+3. THE IMPORT RULES THIS INVENTORY IMPLIES
 --------------------------------------------------------------------------------
 
   1. Animations import gsap / ScrollTrigger / useGSAP ONLY from
@@ -275,4 +208,4 @@ DATA FLOW: ONE NAVIGATION, END TO END
          without a second scroll reset fighting the transition
 
 Nothing in steps 1-7 tears down a global system. That is the whole point of the
-mounting arrangement in section 2.
+mounting arrangement described in section 1.

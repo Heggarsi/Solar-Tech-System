@@ -49,9 +49,8 @@ Typography pairing:
 
 ## 2. Scroll-Driven Animations & Sun Journey
 
-- **Animated Ambient Mesh**: Continuous, slow-drifting soft light-blue and coral gradients (`.ambient-mesh-bg`) in `src/index.css`.
-- **Scroll-Linked Sun**: An SVG sun with rotating rays (`src/components/ScrollSun.tsx`) travels across and down the sky as the user scrolls, intensifying its glow and subtly shifting the background atmosphere from dawn cyan-blue to sunset rose-coral.
-- **Scroll Progress Indicator**: Top progress bar tracking page depth (`src/components/ScrollProgressBar.tsx`).
+- **Scroll-Linked Sun**: A fixed SVG sun with rotating rays (`src/components/SunLayer.tsx`) travels across and down the sky as the user scrolls, intensifying its glow and subtly shifting the background atmosphere from dawn cyan-blue to sunset rose-coral. Mounted once in `src/components/Layout.tsx` so it persists across route changes.
+- **Scroll Progress Indicator**: Top progress bar tracking page depth (`src/components/motion/ScrollProgress.tsx`).
 - **Sticky Navbar**: Blurs and compresses elevation gracefully upon scroll.
 - **Accessibility**: Automatically disables and simplifies animations when the user has `prefers-reduced-motion: reduce` enabled.
 
@@ -120,4 +119,4 @@ Runs TypeScript compiler validation with zero errors.
 - **Site Information & Copy**: Edit `src/data/siteData.ts` to adjust phone numbers, email addresses, service descriptions, testimonials, and blog posts.
 - **Images**: Located in `public/images/` and `public/images/gallery/`.
 - **Colors & Atmosphere**: Edit CSS variables in `src/index.css`.
-- **Sun Behavior**: Fine-tune arc trajectory and glow in `src/components/ScrollSun.tsx`.
+- **Sun Behavior**: Fine-tune arc trajectory and glow in `src/components/SunLayer.tsx`, or the sky phases and sun tokens in `src/lib/motion/tokens.ts`.

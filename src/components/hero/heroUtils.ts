@@ -67,27 +67,6 @@ export const useHeroFx = () => {
   };
 };
 
-/** Interpolates the pointer toward the element centre, GSAP-flavoured. */
-export const followPointer = (
-  el: HTMLElement,
-  opts: { max: number; onMove: (dx: number, dy: number) => void; enabled: boolean },
-) => {
-  if (!opts.enabled) return () => {};
-
-  const onMove = (e: PointerEvent) => {
-    const r = el.getBoundingClientRect();
-    const dx = e.clientX - (r.left + r.width / 2);
-    const dy = e.clientY - (r.top + r.height / 2);
-    opts.onMove(
-      Math.max(-opts.max, Math.min(opts.max, dx * 0.06)),
-      Math.max(-opts.max, Math.min(opts.max, dy * 0.06)),
-    );
-  };
-
-  window.addEventListener('pointermove', onMove, { passive: true });
-  return () => window.removeEventListener('pointermove', onMove);
-};
-
 /**
  * Magnetic pull for the hero CTAs, capped at 8px.
  *

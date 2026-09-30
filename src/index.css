@@ -139,16 +139,6 @@ html.dark body {
   color: #f1f5f9;
 }
 
-/* Raw Black Ambient Mesh Background */
-html.dark .ambient-mesh-bg {
-  background: 
-    radial-gradient(ellipse 75% 65% at 10% 15%, rgba(14, 165, 233, 0.15) 0%, transparent 68%),
-    radial-gradient(ellipse 70% 60% at 90% 25%, rgba(225, 29, 72, 0.12) 0%, transparent 65%),
-    radial-gradient(ellipse 85% 75% at 35% 85%, rgba(2, 132, 199, 0.12) 0%, transparent 75%),
-    radial-gradient(ellipse 65% 55% at 85% 80%, rgba(244, 63, 94, 0.1) 0%, transparent 68%),
-    #000000;
-}
-
 /* Raw Black Card Theming */
 html.dark .solar-glass-card {
   background: linear-gradient(135deg, rgba(14, 20, 32, 0.72) 0%, rgba(26, 12, 22, 0.6) 100%) !important;
@@ -276,246 +266,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Subtle continuous ambient light blue & soft coral drift mesh */
-.ambient-mesh-bg {
-  position: fixed;
-  inset: 0;
-  z-index: -10;
-  pointer-events: none;
-  background: 
-    radial-gradient(ellipse 75% 65% at 10% 15%, rgba(186, 224, 253, 0.55) 0%, transparent 68%),
-    radial-gradient(ellipse 70% 60% at 90% 25%, rgba(254, 205, 211, 0.5) 0%, transparent 65%),
-    radial-gradient(ellipse 85% 75% at 35% 85%, rgba(224, 239, 254, 0.6) 0%, transparent 75%),
-    radial-gradient(ellipse 65% 55% at 85% 80%, rgba(255, 228, 230, 0.55) 0%, transparent 68%),
-    #fbfcfe;
-  background-size: 140% 140%;
-  animation: slowDrift 30s ease-in-out infinite alternate;
-  will-change: background-position;
-}
-
-@keyframes slowDrift {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 50% 100%;
-  }
-}
-
-/* Attractive Background SVG Animations - GPU Offloaded */
-@keyframes slowSpin {
-  from {
-    transform: rotate3d(0, 0, 1, 0deg);
-  }
-  to {
-    transform: rotate3d(0, 0, 1, 360deg);
-  }
-}
-
-.animate-slow-spin {
-  animation: slowSpin 90s linear infinite;
-  transform-origin: center center;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-}
-
-@keyframes reverseSpin {
-  from {
-    transform: rotate3d(0, 0, 1, 360deg);
-  }
-  to {
-    transform: rotate3d(0, 0, 1, 0deg);
-  }
-}
-
-.animate-reverse-spin {
-  animation: reverseSpin 110s linear infinite;
-  transform-origin: center center;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-}
-
-@keyframes floatWave {
-  0%, 100% {
-    transform: translate3d(0, 0px, 0);
-  }
-  50% {
-    transform: translate3d(0, -16px, 0);
-  }
-}
-
-.animate-float-wave {
-  animation: floatWave 14s ease-in-out infinite;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-}
-
-@keyframes wavePulse1 {
-  0%, 100% {
-    opacity: 0.45;
-  }
-  50% {
-    opacity: 0.75;
-  }
-}
-
-.animate-wave-pulse-1 {
-  animation: wavePulse1 8s ease-in-out infinite;
-  will-change: opacity;
-}
-
-@keyframes wavePulse2 {
-  0%, 100% {
-    opacity: 0.35;
-  }
-  50% {
-    opacity: 0.65;
-  }
-}
-
-.animate-wave-pulse-2 {
-  animation: wavePulse2 10s ease-in-out infinite 2s;
-  will-change: opacity;
-}
-
-@keyframes wavePulse3 {
-  0%, 100% {
-    opacity: 0.25;
-  }
-  50% {
-    opacity: 0.55;
-  }
-}
-
-.animate-wave-pulse-3 {
-  animation: wavePulse3 12s ease-in-out infinite;
-  will-change: opacity;
-}
-
-/* Reusable GPU compositor layer utilities */
-.gpu-layer {
-  transform: translate3d(0, 0, 0);
-  will-change: transform;
-  backface-visibility: hidden;
-  perspective: 1000px;
-}
-
-.gpu-layer-full {
-  transform: translate3d(0, 0, 0);
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  perspective: 1000px;
-}
-
-/* Floating Photon Particles - GPU 3D Composited */
-@keyframes floatSlow {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translate3d(12px, -35px, 0) scale3d(1.15, 1.15, 1);
-    opacity: 0.85;
-  }
-}
-
-.animate-float-slow {
-  animation: floatSlow 12s ease-in-out infinite;
-  will-change: transform, opacity;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-}
-
-@keyframes floatMedium {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
-    opacity: 0.55;
-  }
-  50% {
-    transform: translate3d(-18px, -45px, 0) scale3d(1.2, 1.2, 1);
-    opacity: 0.9;
-  }
-}
-
-.animate-float-medium {
-  animation: floatMedium 9s ease-in-out infinite 1.5s;
-  will-change: transform, opacity;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-}
-
-@keyframes floatSlowAlt {
-  0%, 100% {
-    transform: translate3d(0, 0, 0);
-    opacity: 0.4;
-  }
-  50% {
-    transform: translate3d(24px, -30px, 0);
-    opacity: 0.75;
-  }
-}
-
-.animate-float-slow-alt {
-  animation: floatSlowAlt 15s ease-in-out infinite 3s;
-  will-change: transform, opacity;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-}
-
-@keyframes floatFast {
-  0%, 100% {
-    transform: translate3d(0, 0, 0) scale3d(0.9, 0.9, 1);
-    opacity: 0.45;
-  }
-  50% {
-    transform: translate3d(-12px, -50px, 0) scale3d(1.1, 1.1, 1);
-    opacity: 0.8;
-  }
-}
-
-.animate-float-fast {
-  animation: floatFast 7s ease-in-out infinite 0.5s;
-  will-change: transform, opacity;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-}
-
-/* Rotating Sun Rays animation */
-@keyframes rotateSun {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-sun-rays {
-  animation: rotateSun 35s linear infinite;
-  transform-origin: center center;
-}
-
-/* Sun Pulse */
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.7;
-    filter: drop-shadow(0 0 25px rgba(251, 113, 133, 0.45));
-  }
-  50% {
-    opacity: 0.95;
-    filter: drop-shadow(0 0 45px rgba(14, 165, 233, 0.65));
-  }
-}
-
-.animate-sun-glow {
-  animation: pulseGlow 6s ease-in-out infinite;
-}
-
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -574,21 +324,6 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-  .ambient-mesh-bg,
-  .animate-slow-spin,
-  .animate-reverse-spin,
-  .animate-float-wave,
-  .animate-wave-pulse-1,
-  .animate-wave-pulse-2,
-  .animate-wave-pulse-3,
-  .animate-float-slow,
-  .animate-float-medium,
-  .animate-float-slow-alt,
-  .animate-float-fast,
-  .animate-sun-rays,
-  .animate-sun-glow {
-    animation: none !important;
-  }
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
@@ -1036,14 +771,6 @@ html.light-cinematic body {
   transform: scaleX(1);
 }
 
-/* ---------------------------------------------------------------------
-   WebGL handoff: while the 3D scene is mounted it owns the sun, so the
-   CSS sun stands down. One sun on screen, never two.
-   --------------------------------------------------------------------- */
-[data-webgl="sun"] .sun-layer {
-  opacity: 0;
-}
-
 /* =====================================================================
    HERO — "Sunrise over the array"
 
@@ -1250,8 +977,7 @@ body.scroll-locked {
    --------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .sun-rays,
-  .heat-shimmer,
-  .ambient-mesh-bg {
+  .heat-shimmer {
     animation: none !important;
   }
   .sun-orb,
