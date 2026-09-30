@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { SunLayer } from './SunLayer';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+import { BackToTop } from './BackToTop';
 import { ScrollProgress } from './motion/ScrollProgress';
 import { CustomCursor } from './motion/CustomCursor';
 import { RaysLoader } from './motion/RaysLoader';
@@ -83,6 +84,10 @@ export const Layout: React.FC = () => {
       <CustomCursor />
 
       <Navbar />
+
+      {/* Outside PageTransition, so the fixed control is never transformed or
+          faded by a route change. */}
+      <BackToTop />
 
       <PageTransition>
         <main id="main" className="relative z-10 w-full flex-1">
