@@ -7,7 +7,7 @@ export const SITE_INFO = {
   altPhone: '+91 89453 61784',
   altPhoneHref: 'tel:+918945361784',
   email: 'Info@solartechsystems.co.in',
-  altEmail: 'info@sts.in',
+  altEmail: 'omgtt@gmail.com',
   location: 'Bangalore, Karnataka, India',
   hours: 'Mon - Sat: 9:00 AM - 6:30 PM',
   mapEmbed: 'https://www.google.com/maps?q=Bangalore%2C%20Karnataka%2C%20India&output=embed',
@@ -73,6 +73,14 @@ export const SERVICES: ServiceItem[] = [
       { label: 'Conductor Types', value: 'ACSR Dog, Wolf, Panther & HTLS' },
       { label: 'Survey Tech', value: 'Total Station & GPS Profile Mapping' },
       { label: 'Testing', value: 'Hi-Pot, Insulation & Earth Resistance' }
+    ],
+    photos: [
+      'IMG-20261001-WA0001.jpg',
+      'IMG-20261001-WA0003.jpg',
+      'IMG-20261001-WA0005.jpg',
+      'IMG-20261001-WA0002.jpg',
+      'IMG-20261001-WA0004.jpg',
+      'IMG-20261001-WA0006.jpg'
     ]
   },
   {
@@ -297,6 +305,12 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
   { file: 'IMG-20251014-WA0051-1.jpg', width: 1600, height: 901, orientation: 'landscape', title: 'Solar Panel Array with Technician', caption: 'Quality assurance protocol underway on newly installed solar modules.' },
   { file: 'IMG-20251014-WA0052.jpg', width: 1280, height: 720, orientation: 'landscape', title: 'Ground Array Horizon Perspective', caption: 'High-yield utility array oriented towards true South solar coordinates.' },
   { file: 'IMG-20251014-WA0086-1.jpg', width: 1600, height: 716, orientation: 'landscape', title: '33 kV Transmission Line Mast Assembly', caption: 'Intermediate pole structure and cross-arm insulator fixtures.' },
+  { file: 'IMG-20261001-WA0001.jpg', width: 573, height: 1280, orientation: 'portrait', title: '33 kV Line Tower Erection', caption: 'Field erection of overhead transmission line tower sections before stringing.' },
+  { file: 'IMG-20261001-WA0002.jpg', width: 573, height: 1280, orientation: 'portrait', title: 'Conductor Stringing in Progress', caption: 'Conductor stringing and sag tensioning carried out span by span along the line.' },
+  { file: 'IMG-20261001-WA0003.jpg', width: 1280, height: 573, orientation: 'landscape', title: '33 kV Transmission Line Corridor', caption: 'Completed overhead 33 kV corridor carrying plant evacuation power to the pooling substation.' },
+  { file: 'IMG-20261001-WA0004.jpg', width: 573, height: 1280, orientation: 'portrait', title: 'Tower Foundation Civil Work', caption: 'Reinforced column and anchor bolt foundation cast for a transmission line tower.' },
+  { file: 'IMG-20261001-WA0005.jpg', width: 716, height: 1600, orientation: 'portrait', title: 'Insulator and Hardware Termination', caption: 'Polymer insulator strings with strain hardware at a terminal structure.' },
+  { file: 'IMG-20261001-WA0006.jpg', width: 573, height: 1280, orientation: 'portrait', title: 'Line Survey and Spotting', caption: 'Total Station profiling used to finalise pole and tower spotting before construction.' },
   { file: 'IMG-20251014-WA0082.jpg', width: 716, height: 1600, orientation: 'portrait', title: 'Substation Yard Gantry Vertical', caption: 'Incoming high-tension transmission termination bay.' },
   { file: 'IMG-20251014-WA0050.jpg', width: 500, height: 500, orientation: 'square', title: 'Solar Tech Systems Component Detail', caption: 'High-specification hardware engineered for 25-year field endurance.' }
 ];

@@ -79,7 +79,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                     {SITE_INFO.email}
                   </a>
                   <div className="text-xs text-slate-500 mt-1">
-                    Desk: <a href="mailto:info@sts.in" className="hover:text-slate-800">info@sts.in</a>
+                    Desk: <a href="mailto:omgtt@gmail.com" className="hover:text-slate-800">omgtt@gmail.com</a>
                   </div>
                 </div>
 

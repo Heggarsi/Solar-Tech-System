@@ -287,7 +287,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   <a href={`mailto:${SITE_INFO.email}`} className="mt-1 block text-base font-bold text-white transition-colors hover:text-sun-300">
                     {SITE_INFO.email}
                   </a>
-                  <div className="mt-0.5 text-xs text-dawn-200/50">Alt: info@sts.in</div>
+                  <div className="mt-0.5 text-xs text-dawn-200/50">Alt: omgtt@gmail.com</div>
                 </div>
 
                 <div>

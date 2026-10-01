@@ -6,6 +6,8 @@ export interface ServiceItem {
   img: string;
   features: string[];
   specs: { label: string; value: string }[];
+  /** Gallery filenames (relative to /images/gallery) shown on the service page. */
+  photos?: string[];
 }
 
 export interface TestimonialItem {

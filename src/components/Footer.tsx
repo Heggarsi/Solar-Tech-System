@@ -104,10 +104,10 @@ export const Footer: React.FC = () => {
                 <div className="mono-label text-dawn-200/40">Email</div>
                 <div className="mt-1 flex flex-wrap items-center gap-2">
                   <a
-                    href="mailto:info@sts.in"
+                    href="mailto:omgtt@gmail.com"
                     className="text-dawn-200/80 transition-colors hover:text-sun-300"
                   >
-                    info@sts.in
+                    omgtt@gmail.com
                   </a>
                   <span className="text-white/20">/</span>
                   <a

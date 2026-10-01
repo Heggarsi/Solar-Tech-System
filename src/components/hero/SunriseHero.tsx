@@ -193,22 +193,12 @@ export const SunriseHero: React.FC<SunriseHeroProps> = ({ onNavigate }) => {
         aria-hidden="true"
       >
         <picture className="block h-full w-full">
-          <source
-            type="image/avif"
-            srcSet="/images/hero_clean_tech1-640.avif 640w, /images/hero_clean_tech1-1024.avif 1024w, /images/hero_clean_tech1-1200.avif 1200w"
-            sizes="100vw"
-          />
-          <source
-            type="image/webp"
-            srcSet="/images/hero_clean_tech1-640.webp 640w, /images/hero_clean_tech1-1024.webp 1024w, /images/hero_clean_tech1-1200.webp 1200w"
-            sizes="100vw"
-          />
           <img
             data-hero-bg-img
-            src="/images/hero_clean_tech1.jpg"
+            src="/images/heroimage1.png"
             alt=""
-            width={1200}
-            height={896}
+            width={1671}
+            height={941}
             fetchPriority="high"
             decoding="async"
             className="block h-full w-full object-cover object-[center_10%] will-change-transform"

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageHero } from '../components/PageHero';
-import { SERVICES, WHY_CHOOSE_ITEMS, SITE_INFO } from '../data/siteData';
+import { SERVICES, WHY_CHOOSE_ITEMS, SITE_INFO, GALLERY_PHOTOS } from '../data/siteData';
 import { routePath, ROUTES } from '../content/site';
-import { ServiceItem } from '../types';
+import { useReducedMotion } from '../hooks/useReducedMotion';
+import { ServiceItem, GalleryPhoto } from '../types';
 
 interface ServicePageProps {
   service: ServiceItem;
@@ -11,6 +12,30 @@ interface ServicePageProps {
 
 export const ServicePage: React.FC<ServicePageProps> = ({ service, onNavigate }) => {
   const otherServices = SERVICES.filter(s => s.slug !== service.slug);
+
+  // Titles/captions are resolved from the shared gallery so the two stay in sync.
+  const photos = (service.photos ?? [])
+    .map(file => GALLERY_PHOTOS.find(p => p.file === file))
+    .filter((p): p is GalleryPhoto => Boolean(p));
+
+  const reducedMotion = useReducedMotion();
+  const [slide, setSlide] = useState(0);
+
+  // Reset the carousel when navigating between service pages.
+  useEffect(() => {
+    setSlide(0);
+  }, [service.slug]);
+
+  useEffect(() => {
+    if (photos.length < 2 || reducedMotion) return;
+    const id = window.setInterval(() => {
+      setSlide(i => (i + 1) % photos.length);
+    }, 4500);
+    return () => window.clearInterval(id);
+  }, [photos.length, reducedMotion]);
+
+  const prevSlide = () => setSlide(i => (i - 1 + photos.length) % photos.length);
+  const nextSlide = () => setSlide(i => (i + 1) % photos.length);
 
   return (
     <div className="relative w-full overflow-x-hidden bg-paper">
@@ -29,56 +54,124 @@ export const ServicePage: React.FC<ServicePageProps> = ({ service, onNavigate })
 
       {/* OVERVIEW & HIGHLIGHTS — photograph on the left, capabilities on the right */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 relative">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center relative z-10">
-          <div className="lg:col-span-4">
+        <div className="max-w-7xl mx-auto space-y-10 relative z-10">
+          <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
+            Overview
+          </h2>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+<div className="lg:col-span-4 space-y-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 font-sans">
+              Photographs Across Karnataka
+            </h3>
             <div className="rounded-2xl overflow-hidden shadow-md solar-glass-card p-2">
-              <img
-                src={service.img}
-                alt={service.title}
-                className="w-full h-80 sm:h-96 object-cover rounded-xl"
-              />
+              <div className="relative h-80 sm:h-96 overflow-hidden rounded-xl bg-slate-900">
+                {photos.length > 0 ? (
+                  <>
+                    {photos.map((photo, i) => (
+                      <img
+                        key={photo.file}
+                        src={`/images/gallery/${photo.file}`}
+                        alt={photo.title}
+                        loading={i === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        aria-hidden={i !== slide}
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+                          i === slide ? 'opacity-100' : 'opacity-0'
+                        }`}
+                      />
+                    ))}
+
+                    {/* Prev / Next controls */}
+                    {photos.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={prevSlide}
+                          aria-label="Previous photo"
+                          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-full bg-slate-950/55 hover:bg-slate-950/80 text-white text-sm leading-none backdrop-blur-sm transition-colors cursor-pointer"
+                        >
+                          &#8249;
+                        </button>
+                        <button
+                          type="button"
+                          onClick={nextSlide}
+                          aria-label="Next photo"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-full bg-slate-950/55 hover:bg-slate-950/80 text-white text-sm leading-none backdrop-blur-sm transition-colors cursor-pointer"
+                        >
+                          &#8250;
+                        </button>
+
+                        {/* Caption + dots */}
+                        <div className="absolute inset-x-0 bottom-0 z-10 p-3 bg-gradient-to-t from-slate-950/85 to-transparent">
+                          <p className="text-xs font-semibold text-white leading-tight line-clamp-1">
+                            {photos[slide].title}
+                          </p>
+                          <div className="mt-2 flex items-center gap-1.5">
+                            {photos.map((photo, i) => (
+                              <button
+                                key={photo.file}
+                                type="button"
+                                onClick={() => setSlide(i)}
+                                aria-label={`Go to photo ${i + 1}`}
+                                aria-current={i === slide}
+                                className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                                  i === slide ? 'w-5 bg-rose-400' : 'w-1.5 bg-white/50 hover:bg-white/80'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <img
+                    src={service.img}
+                    alt={service.title}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="lg:col-span-8 solar-glass-card p-8 sm:p-12 rounded-2xl space-y-6">
-            <div className="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-semibold">
-              Technical Capabilities
-            </div>
-
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
-              Overview
-            </h2>
-
-            <p className="text-base sm:text-lg text-slate-700 leading-relaxed">
-              {service.desc}
-            </p>
-
-            {/* Feature Checklist */}
-            <div className="pt-4 border-t border-slate-100">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4 font-sans">
-                Key Engineering Deliverables
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {service.features.map((feat, idx) => (
-                  <div key={idx} className="text-sm text-slate-700 pl-4 border-l-2 border-sky-400">
-                    {feat}
-                  </div>
-                ))}
+            <div className="lg:col-span-8 solar-glass-card p-8 sm:p-12 rounded-2xl space-y-6">
+              <div className="inline-block px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-semibold">
+                Technical Capabilities
               </div>
-            </div>
 
-            {/* Specifications Matrix */}
-            <div className="pt-6 border-t border-slate-100">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4 font-sans">
-                Specifications &amp; Compliance Standards
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {service.specs.map((sp, idx) => (
-                  <div key={idx} className="p-3.5 rounded-xl solar-glass-card">
-                    <div className="text-xs text-slate-500">{sp.label}</div>
-                    <div className="text-sm font-bold text-slate-800 mt-1">{sp.value}</div>
-                  </div>
-                ))}
+              <p className="text-base sm:text-lg text-slate-700 leading-relaxed">
+                {service.desc}
+              </p>
+
+              {/* Feature Checklist */}
+              <div className="pt-4 border-t border-slate-100">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4 font-sans">
+                  Key Engineering Deliverables
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {service.features.map((feat, idx) => (
+                    <div key={idx} className="text-sm text-slate-700 pl-4 border-l-2 border-sky-400">
+                      {feat}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Specifications Matrix */}
+              <div className="pt-6 border-t border-slate-100">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4 font-sans">
+                  Specifications &amp; Compliance Standards
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {service.specs.map((sp, idx) => (
+                    <div key={idx} className="p-3.5 rounded-xl solar-glass-card">
+                      <div className="text-xs text-slate-500">{sp.label}</div>
+                      <div className="text-sm font-bold text-slate-800 mt-1">{sp.value}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
